@@ -43,48 +43,6 @@ python scripts/train_rlvr.py
 python scripts/train_rlvr.py --eval --checkpoint results/rlvr/checkpoint_latest.pt
 ```
 
-## Repository Structure
-
-```
-chronos/
-├── experiments/chronos/
-│   ├── rl/                     # RLVR training module
-│   │   ├── policy.py           # MLP policy (67→128→128→21, ~20K params)
-│   │   ├── env.py              # Transform MDP environment
-│   │   └── grpo.py             # GRPO trainer (BC + rollouts + advantage + update)
-│   ├── features/               # Feature extraction
-│   │   └── kernel_features.py  # 25 scalar features from ParsedKernel
-│   ├── transform/              # PTX transform library (20 transforms)
-│   │   ├── vectorize_loads.py
-│   │   ├── vectorize_stores.py
-│   │   ├── cache_hints.py
-│   │   ├── register_budget.py
-│   │   ├── reorder.py
-│   │   ├── prefetch.py
-│   │   ├── store_cache_hints.py
-│   │   └── split_vectors.py
-│   ├── harness/                # PTX compilation + benchmarking
-│   │   ├── ptx_templates.py    # gemm_tile kernel generator
-│   │   └── ptx_compiler.py     # ptxas compilation
-│   ├── env/                    # Instruction scheduling environment
-│   ├── search/                 # MCTS search
-│   └── model/                  # Learned world model
-├── scripts/
-│   ├── train_rlvr.py           # Main training entry point
-│   ├── train_bc.py             # Behavior cloning baseline (sklearn)
-│   ├── build_trajectories.py   # Convert greedy traces to training data
-│   ├── greedy_search_v2.py     # Greedy baseline (20-transform)
-│   └── benchmark_transforms_v2.py  # Transform validation
-├── data/
-│   ├── trajectories_v2.jsonl   # 259 training entries (195 transforms + 64 stops)
-│   ├── bc_results.json         # BC baseline results
-│   ├── greedy_search_v2_results.json  # Greedy v2 per-kernel results
-│   └── trajectory_summary.json
-└── docs/
-    ├── TRAINING_LOOP_DESIGN.md # Algorithm design (GRPO, reward, architecture)
-    └── PROBLEM_DEFINITION.md   # Full problem definition with experimental data
-```
-
 ## Algorithm
 
 **GRPO (Group Relative Policy Optimization)** — from DeepSeek-R1, adapted for compiler optimization:
