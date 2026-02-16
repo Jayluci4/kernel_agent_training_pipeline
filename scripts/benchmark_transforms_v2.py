@@ -8,11 +8,10 @@ change cycles, and the magnitude of each transform's effect.
 This validates the expanded action space before using it for trajectory
 collection or RLVR training.
 
-Output: exp-assembly/data/transform_benchmark_v2.json
+Output: data/transform_benchmark_v2.json
 
 Usage:
-    source SAWO/experiments/chronos/setup_env.sh
-    python3 exp-assembly/scripts/benchmark_transforms_v2.py
+    python scripts/benchmark_transforms_v2.py
 """
 
 import sys

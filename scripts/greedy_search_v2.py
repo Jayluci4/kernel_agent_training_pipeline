@@ -4,11 +4,10 @@
 Compares against the original 9-transform greedy to measure the value
 of the new transforms, especially vectorize_stores.
 
-Output: exp-assembly/data/greedy_search_v2_results.json
+Output: data/greedy_search_v2_results.json
 
 Usage:
-    source SAWO/experiments/chronos/setup_env.sh
-    python3 exp-assembly/scripts/greedy_search_v2.py
+    python scripts/greedy_search_v2.py
 """
 
 import sys
