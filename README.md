@@ -30,17 +30,16 @@ pip install cupy-cuda12x
 
 ```bash
 # BC warm-start (CPU, ~2 seconds)
-python scripts/train_rlvr.py --bc-only
+python train_rlvr.py --bc-only
 
 # Quick test (2 kernels, no GPU)
-python scripts/train_rlvr.py --quick --no-hardware
+python train_rlvr.py --quick --no-hardware
 
 # Full GRPO training (requires NVIDIA GPU)
-source experiments/chronos/setup_env.sh
-python scripts/train_rlvr.py
+python train_rlvr.py
 
 # Evaluate a checkpoint
-python scripts/train_rlvr.py --eval --checkpoint results/rlvr/checkpoint_latest.pt
+python train_rlvr.py --eval --checkpoint results/rlvr/checkpoint_latest.pt
 ```
 
 ## Algorithm
