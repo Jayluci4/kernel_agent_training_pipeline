@@ -1,0 +1,3054 @@
+{
+  "gpu": "NVIDIA L4",
+  "n_transforms": 20,
+  "n_kernels": 9,
+  "transform_labels": [
+    "vec_ld",
+    "cache_cs",
+    "cache_cg",
+    "maxnreg_32",
+    "maxnreg_64",
+    "maxnreg_128",
+    "maxnreg_255",
+    "reorder_cp",
+    "reorder_il",
+    "vec_st",
+    "prefetch_L1",
+    "prefetch_L2",
+    "st_cache_cs",
+    "st_cache_wt",
+    "st_cache_wb",
+    "split_ld",
+    "cache_ca",
+    "cache_cv",
+    "reorder_lf",
+    "reorder_sl"
+  ],
+  "wall_time_s": 304.9,
+  "results": [
+    {
+      "kernel": "gemm_tile(2,2,2)",
+      "m": 2,
+      "n": 2,
+      "k": 2,
+      "baseline_cycles": 409,
+      "baseline_ptxas": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 18 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 2.770 ms",
+      "transforms": [
+        {
+          "transform": "vec_ld",
+          "name": "vectorize_loads",
+          "params": {},
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 416,
+            "mean": 415.5,
+            "std": 1.1
+          },
+          "delta_pct": 1.7,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 20 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 2.466 ms"
+        },
+        {
+          "transform": "cache_cs",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cs"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 417,
+            "mean": 416.4,
+            "std": 1.1
+          },
+          "delta_pct": 2.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 18 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 2.644 ms"
+        },
+        {
+          "transform": "cache_cg",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cg"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 425,
+            "mean": 424.6,
+            "std": 1.2
+          },
+          "delta_pct": 3.9,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 18 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 2.777 ms"
+        },
+        {
+          "transform": "maxnreg_32",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 32
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 417,
+            "mean": 416.5,
+            "std": 1.1
+          },
+          "delta_pct": 2.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 18 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 2.720 ms"
+        },
+        {
+          "transform": "maxnreg_64",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 64
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 417,
+            "mean": 416.4,
+            "std": 1.2
+          },
+          "delta_pct": 2.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 18 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 2.697 ms"
+        },
+        {
+          "transform": "maxnreg_128",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 128
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 417,
+            "mean": 416.5,
+            "std": 1.1
+          },
+          "delta_pct": 2.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 18 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 2.667 ms"
+        },
+        {
+          "transform": "maxnreg_255",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 255
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 417,
+            "mean": 416.4,
+            "std": 1.2
+          },
+          "delta_pct": 2.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 18 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 2.721 ms"
+        },
+        {
+          "transform": "reorder_cp",
+          "name": "reorder",
+          "params": {
+            "strategy": "critical_path"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 417,
+            "mean": 416.4,
+            "std": 1.2
+          },
+          "delta_pct": 2.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 20 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 2.638 ms"
+        },
+        {
+          "transform": "reorder_il",
+          "name": "reorder",
+          "params": {
+            "strategy": "interleave"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 415,
+            "mean": 414.3,
+            "std": 1.1
+          },
+          "delta_pct": 1.5,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 20 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 3.739 ms"
+        },
+        {
+          "transform": "vec_st",
+          "name": "vectorize_stores",
+          "params": {},
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 424,
+            "mean": 423.5,
+            "std": 1.1
+          },
+          "delta_pct": 3.7,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 17 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 3.913 ms"
+        },
+        {
+          "transform": "prefetch_L1",
+          "name": "prefetch",
+          "params": {
+            "level": "L1"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 443,
+            "mean": 442.5,
+            "std": 1.2
+          },
+          "delta_pct": 8.3,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 18 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 2.697 ms"
+        },
+        {
+          "transform": "prefetch_L2",
+          "name": "prefetch",
+          "params": {
+            "level": "L2"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 443,
+            "mean": 442.4,
+            "std": 1.2
+          },
+          "delta_pct": 8.3,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 18 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 2.753 ms"
+        },
+        {
+          "transform": "st_cache_cs",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "cs"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 417,
+            "mean": 416.5,
+            "std": 1.2
+          },
+          "delta_pct": 2.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 18 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 2.704 ms"
+        },
+        {
+          "transform": "st_cache_wt",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "wt"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 417,
+            "mean": 416.6,
+            "std": 1.2
+          },
+          "delta_pct": 2.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 18 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 2.592 ms"
+        },
+        {
+          "transform": "st_cache_wb",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "wb"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 417,
+            "mean": 416.5,
+            "std": 1.1
+          },
+          "delta_pct": 2.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 18 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 2.808 ms"
+        },
+        {
+          "transform": "split_ld",
+          "name": "split_vector_loads",
+          "params": {},
+          "changed": false,
+          "status": "no_change"
+        },
+        {
+          "transform": "cache_ca",
+          "name": "cache_hints",
+          "params": {
+            "policy": "ca"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 417,
+            "mean": 416.5,
+            "std": 1.1
+          },
+          "delta_pct": 2.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 18 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 2.600 ms"
+        },
+        {
+          "transform": "cache_cv",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cv"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 425,
+            "mean": 424.4,
+            "std": 1.1
+          },
+          "delta_pct": 3.9,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 18 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 2.679 ms"
+        },
+        {
+          "transform": "reorder_lf",
+          "name": "reorder",
+          "params": {
+            "strategy": "loads_first"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 417,
+            "mean": 416.5,
+            "std": 1.1
+          },
+          "delta_pct": 2.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 20 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 2.660 ms"
+        },
+        {
+          "transform": "reorder_sl",
+          "name": "reorder",
+          "params": {
+            "strategy": "stores_last"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 417,
+            "mean": 416.5,
+            "std": 1.1
+          },
+          "delta_pct": 2.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 20 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 2.616 ms"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(2,4,4)",
+      "m": 2,
+      "n": 4,
+      "k": 4,
+      "baseline_cycles": 550,
+      "baseline_ptxas": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 4.343 ms",
+      "transforms": [
+        {
+          "transform": "vec_ld",
+          "name": "vectorize_loads",
+          "params": {},
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 511,
+            "mean": 510.5,
+            "std": 1.3
+          },
+          "delta_pct": -7.1,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 36 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 3.654 ms"
+        },
+        {
+          "transform": "cache_cs",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cs"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 550,
+            "mean": 549.4,
+            "std": 1.1
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 4.348 ms"
+        },
+        {
+          "transform": "cache_cg",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cg"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 563,
+            "mean": 562.6,
+            "std": 1.2
+          },
+          "delta_pct": 2.4,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 4.326 ms"
+        },
+        {
+          "transform": "maxnreg_32",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 32
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 556,
+            "mean": 555.6,
+            "std": 1.1
+          },
+          "delta_pct": 1.1,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 32 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 4.436 ms"
+        },
+        {
+          "transform": "maxnreg_64",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 64
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 550,
+            "mean": 549.6,
+            "std": 1.2
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 4.291 ms"
+        },
+        {
+          "transform": "maxnreg_128",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 128
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 550,
+            "mean": 549.4,
+            "std": 1.1
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 4.305 ms"
+        },
+        {
+          "transform": "maxnreg_255",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 255
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 550,
+            "mean": 549.5,
+            "std": 1.2
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 4.445 ms"
+        },
+        {
+          "transform": "reorder_cp",
+          "name": "reorder",
+          "params": {
+            "strategy": "critical_path"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 550,
+            "mean": 549.5,
+            "std": 1.2
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 4.346 ms"
+        },
+        {
+          "transform": "reorder_il",
+          "name": "reorder",
+          "params": {
+            "strategy": "interleave"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 551,
+            "mean": 550.4,
+            "std": 1.0
+          },
+          "delta_pct": 0.2,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 4.359 ms"
+        },
+        {
+          "transform": "vec_st",
+          "name": "vectorize_stores",
+          "params": {},
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 527,
+            "mean": 526.4,
+            "std": 1.1
+          },
+          "delta_pct": -4.2,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 36 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 4.053 ms"
+        },
+        {
+          "transform": "prefetch_L1",
+          "name": "prefetch",
+          "params": {
+            "level": "L1"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 558,
+            "mean": 557.4,
+            "std": 1.0
+          },
+          "delta_pct": 1.5,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 4.453 ms"
+        },
+        {
+          "transform": "prefetch_L2",
+          "name": "prefetch",
+          "params": {
+            "level": "L2"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 558,
+            "mean": 557.5,
+            "std": 1.2
+          },
+          "delta_pct": 1.5,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 4.379 ms"
+        },
+        {
+          "transform": "st_cache_cs",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "cs"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 550,
+            "mean": 549.4,
+            "std": 1.1
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 4.360 ms"
+        },
+        {
+          "transform": "st_cache_wt",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "wt"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 550,
+            "mean": 549.6,
+            "std": 1.2
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 4.379 ms"
+        },
+        {
+          "transform": "st_cache_wb",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "wb"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 550,
+            "mean": 549.4,
+            "std": 1.2
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 4.333 ms"
+        },
+        {
+          "transform": "split_ld",
+          "name": "split_vector_loads",
+          "params": {},
+          "changed": false,
+          "status": "no_change"
+        },
+        {
+          "transform": "cache_ca",
+          "name": "cache_hints",
+          "params": {
+            "policy": "ca"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 550,
+            "mean": 549.5,
+            "std": 1.1
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 4.353 ms"
+        },
+        {
+          "transform": "cache_cv",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cv"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 563,
+            "mean": 562.3,
+            "std": 1.2
+          },
+          "delta_pct": 2.4,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 4.363 ms"
+        },
+        {
+          "transform": "reorder_lf",
+          "name": "reorder",
+          "params": {
+            "strategy": "loads_first"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 550,
+            "mean": 549.5,
+            "std": 1.2
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 4.358 ms"
+        },
+        {
+          "transform": "reorder_sl",
+          "name": "reorder",
+          "params": {
+            "strategy": "stores_last"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 550,
+            "mean": 549.5,
+            "std": 1.1
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 4.364 ms"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(4,4,4)",
+      "m": 4,
+      "n": 4,
+      "k": 4,
+      "baseline_cycles": 696,
+      "baseline_ptxas": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 6.709 ms",
+      "transforms": [
+        {
+          "transform": "vec_ld",
+          "name": "vectorize_loads",
+          "params": {},
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 597,
+            "mean": 596.5,
+            "std": 1.2
+          },
+          "delta_pct": -14.2,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 5.492 ms"
+        },
+        {
+          "transform": "cache_cs",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cs"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 696,
+            "mean": 695.5,
+            "std": 1.2
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 6.700 ms"
+        },
+        {
+          "transform": "cache_cg",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cg"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 921,
+            "mean": 921.1,
+            "std": 1.7
+          },
+          "delta_pct": 32.3,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 6.662 ms"
+        },
+        {
+          "transform": "maxnreg_32",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 32
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 936,
+            "mean": 936.0,
+            "std": 1.7
+          },
+          "delta_pct": 34.5,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 32 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 6.417 ms"
+        },
+        {
+          "transform": "maxnreg_64",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 64
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 661,
+            "mean": 660.6,
+            "std": 1.3
+          },
+          "delta_pct": -5.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 8.803 ms"
+        },
+        {
+          "transform": "maxnreg_128",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 128
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 661,
+            "mean": 660.5,
+            "std": 1.2
+          },
+          "delta_pct": -5.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 6.581 ms"
+        },
+        {
+          "transform": "maxnreg_255",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 255
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 661,
+            "mean": 660.5,
+            "std": 1.2
+          },
+          "delta_pct": -5.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 6.558 ms"
+        },
+        {
+          "transform": "reorder_cp",
+          "name": "reorder",
+          "params": {
+            "strategy": "critical_path"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 690,
+            "mean": 689.4,
+            "std": 1.0
+          },
+          "delta_pct": -0.9,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 6.573 ms"
+        },
+        {
+          "transform": "reorder_il",
+          "name": "reorder",
+          "params": {
+            "strategy": "interleave"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 690,
+            "mean": 689.5,
+            "std": 1.2
+          },
+          "delta_pct": -0.9,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 6.617 ms"
+        },
+        {
+          "transform": "vec_st",
+          "name": "vectorize_stores",
+          "params": {},
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 631,
+            "mean": 630.5,
+            "std": 1.1
+          },
+          "delta_pct": -9.3,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 39 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 5.875 ms"
+        },
+        {
+          "transform": "prefetch_L1",
+          "name": "prefetch",
+          "params": {
+            "level": "L1"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 688,
+            "mean": 687.6,
+            "std": 1.1
+          },
+          "delta_pct": -1.1,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 6.586 ms"
+        },
+        {
+          "transform": "prefetch_L2",
+          "name": "prefetch",
+          "params": {
+            "level": "L2"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 688,
+            "mean": 687.5,
+            "std": 1.2
+          },
+          "delta_pct": -1.1,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 6.610 ms"
+        },
+        {
+          "transform": "st_cache_cs",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "cs"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 696,
+            "mean": 695.3,
+            "std": 1.2
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 6.931 ms"
+        },
+        {
+          "transform": "st_cache_wt",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "wt"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 696,
+            "mean": 695.4,
+            "std": 1.1
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 6.659 ms"
+        },
+        {
+          "transform": "st_cache_wb",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "wb"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 696,
+            "mean": 695.6,
+            "std": 1.3
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 8.141 ms"
+        },
+        {
+          "transform": "split_ld",
+          "name": "split_vector_loads",
+          "params": {},
+          "changed": false,
+          "status": "no_change"
+        },
+        {
+          "transform": "cache_ca",
+          "name": "cache_hints",
+          "params": {
+            "policy": "ca"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 696,
+            "mean": 695.5,
+            "std": 1.2
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 6.715 ms"
+        },
+        {
+          "transform": "cache_cv",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cv"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 921,
+            "mean": 921.0,
+            "std": 1.8
+          },
+          "delta_pct": 32.3,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 6.671 ms"
+        },
+        {
+          "transform": "reorder_lf",
+          "name": "reorder",
+          "params": {
+            "strategy": "loads_first"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 690,
+            "mean": 689.5,
+            "std": 1.2
+          },
+          "delta_pct": -0.9,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 6.558 ms"
+        },
+        {
+          "transform": "reorder_sl",
+          "name": "reorder",
+          "params": {
+            "strategy": "stores_last"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 690,
+            "mean": 689.4,
+            "std": 1.2
+          },
+          "delta_pct": -0.9,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 6.600 ms"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(4,6,4)",
+      "m": 4,
+      "n": 6,
+      "k": 4,
+      "baseline_cycles": 832,
+      "baseline_ptxas": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 8.877 ms",
+      "transforms": [
+        {
+          "transform": "vec_ld",
+          "name": "vectorize_loads",
+          "params": {},
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 863,
+            "mean": 862.7,
+            "std": 1.6
+          },
+          "delta_pct": 3.7,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 7.561 ms"
+        },
+        {
+          "transform": "cache_cs",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cs"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 832,
+            "mean": 831.5,
+            "std": 1.3
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 9.006 ms"
+        },
+        {
+          "transform": "cache_cg",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cg"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 839,
+            "mean": 838.4,
+            "std": 1.2
+          },
+          "delta_pct": 0.8,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 9.047 ms"
+        },
+        {
+          "transform": "maxnreg_32",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 32
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1659,
+            "mean": 1659.0,
+            "std": 1.5
+          },
+          "delta_pct": 99.4,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    120 bytes stack frame, 116 bytes spill stores, 140 bytes spill loads\nptxas info    : Used 32 registers, used 0 barriers, 120 bytes cumulative stack size, 384 bytes cmem[0]\nptxas info    : Compile time = 10.001 ms"
+        },
+        {
+          "transform": "maxnreg_64",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 64
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 790,
+            "mean": 789.4,
+            "std": 1.1
+          },
+          "delta_pct": -5.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 63 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 9.259 ms"
+        },
+        {
+          "transform": "maxnreg_128",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 128
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 790,
+            "mean": 789.5,
+            "std": 1.2
+          },
+          "delta_pct": -5.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 63 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 9.251 ms"
+        },
+        {
+          "transform": "maxnreg_255",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 255
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 790,
+            "mean": 789.4,
+            "std": 1.2
+          },
+          "delta_pct": -5.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 63 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 9.128 ms"
+        },
+        {
+          "transform": "reorder_cp",
+          "name": "reorder",
+          "params": {
+            "strategy": "critical_path"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 851,
+            "mean": 850.4,
+            "std": 1.0
+          },
+          "delta_pct": 2.3,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 8.986 ms"
+        },
+        {
+          "transform": "reorder_il",
+          "name": "reorder",
+          "params": {
+            "strategy": "interleave"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 797,
+            "mean": 796.6,
+            "std": 1.1
+          },
+          "delta_pct": -4.2,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 9.021 ms"
+        },
+        {
+          "transform": "vec_st",
+          "name": "vectorize_stores",
+          "params": {},
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 723,
+            "mean": 722.4,
+            "std": 1.2
+          },
+          "delta_pct": -13.1,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 7.990 ms"
+        },
+        {
+          "transform": "prefetch_L1",
+          "name": "prefetch",
+          "params": {
+            "level": "L1"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 856,
+            "mean": 855.6,
+            "std": 1.3
+          },
+          "delta_pct": 2.9,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 9.425 ms"
+        },
+        {
+          "transform": "prefetch_L2",
+          "name": "prefetch",
+          "params": {
+            "level": "L2"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 856,
+            "mean": 855.6,
+            "std": 1.2
+          },
+          "delta_pct": 2.9,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 9.027 ms"
+        },
+        {
+          "transform": "st_cache_cs",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "cs"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 832,
+            "mean": 831.5,
+            "std": 1.0
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 8.869 ms"
+        },
+        {
+          "transform": "st_cache_wt",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "wt"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 832,
+            "mean": 831.5,
+            "std": 1.2
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 8.929 ms"
+        },
+        {
+          "transform": "st_cache_wb",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "wb"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 832,
+            "mean": 831.5,
+            "std": 1.1
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 8.915 ms"
+        },
+        {
+          "transform": "split_ld",
+          "name": "split_vector_loads",
+          "params": {},
+          "changed": false,
+          "status": "no_change"
+        },
+        {
+          "transform": "cache_ca",
+          "name": "cache_hints",
+          "params": {
+            "policy": "ca"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 832,
+            "mean": 831.6,
+            "std": 1.2
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 8.887 ms"
+        },
+        {
+          "transform": "cache_cv",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cv"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 839,
+            "mean": 838.5,
+            "std": 1.1
+          },
+          "delta_pct": 0.8,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 9.088 ms"
+        },
+        {
+          "transform": "reorder_lf",
+          "name": "reorder",
+          "params": {
+            "strategy": "loads_first"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 851,
+            "mean": 850.5,
+            "std": 1.0
+          },
+          "delta_pct": 2.3,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 9.115 ms"
+        },
+        {
+          "transform": "reorder_sl",
+          "name": "reorder",
+          "params": {
+            "strategy": "stores_last"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 851,
+            "mean": 850.6,
+            "std": 1.2
+          },
+          "delta_pct": 2.3,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 9.061 ms"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(4,8,8)",
+      "m": 4,
+      "n": 8,
+      "k": 8,
+      "baseline_cycles": 1434,
+      "baseline_ptxas": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 24.719 ms",
+      "transforms": [
+        {
+          "transform": "vec_ld",
+          "name": "vectorize_loads",
+          "params": {},
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1144,
+            "mean": 1143.5,
+            "std": 1.2
+          },
+          "delta_pct": -20.2,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 102 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 19.573 ms"
+        },
+        {
+          "transform": "cache_cs",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cs"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1434,
+            "mean": 1433.8,
+            "std": 1.6
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 24.663 ms"
+        },
+        {
+          "transform": "cache_cg",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cg"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1438,
+            "mean": 1437.5,
+            "std": 1.6
+          },
+          "delta_pct": 0.3,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 24.557 ms"
+        },
+        {
+          "transform": "maxnreg_32",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 32
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 4453,
+            "mean": 4453.1,
+            "std": 2.1
+          },
+          "delta_pct": 210.5,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    424 bytes stack frame, 428 bytes spill stores, 656 bytes spill loads\nptxas info    : Used 32 registers, used 0 barriers, 424 bytes cumulative stack size, 384 bytes cmem[0]\nptxas info    : Compile time = 27.932 ms"
+        },
+        {
+          "transform": "maxnreg_64",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 64
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 2232,
+            "mean": 2231.8,
+            "std": 1.3
+          },
+          "delta_pct": 55.6,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    208 bytes stack frame, 196 bytes spill stores, 240 bytes spill loads\nptxas info    : Used 64 registers, used 0 barriers, 208 bytes cumulative stack size, 384 bytes cmem[0]\nptxas info    : Compile time = 25.664 ms"
+        },
+        {
+          "transform": "maxnreg_128",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 128
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1321,
+            "mean": 1321.0,
+            "std": 2.0
+          },
+          "delta_pct": -7.9,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 128 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 25.433 ms"
+        },
+        {
+          "transform": "maxnreg_255",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 255
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1321,
+            "mean": 1320.7,
+            "std": 2.3
+          },
+          "delta_pct": -7.9,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 128 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 25.331 ms"
+        },
+        {
+          "transform": "reorder_cp",
+          "name": "reorder",
+          "params": {
+            "strategy": "critical_path"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 2173,
+            "mean": 2173.3,
+            "std": 1.8
+          },
+          "delta_pct": 51.5,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 22.908 ms"
+        },
+        {
+          "transform": "reorder_il",
+          "name": "reorder",
+          "params": {
+            "strategy": "interleave"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1972,
+            "mean": 1971.9,
+            "std": 1.5
+          },
+          "delta_pct": 37.5,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 22.974 ms"
+        },
+        {
+          "transform": "vec_st",
+          "name": "vectorize_stores",
+          "params": {},
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1302,
+            "mean": 1301.8,
+            "std": 1.7
+          },
+          "delta_pct": -9.2,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 72 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 20.111 ms"
+        },
+        {
+          "transform": "prefetch_L1",
+          "name": "prefetch",
+          "params": {
+            "level": "L1"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1479,
+            "mean": 1479.0,
+            "std": 1.7
+          },
+          "delta_pct": 3.1,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 24.876 ms"
+        },
+        {
+          "transform": "prefetch_L2",
+          "name": "prefetch",
+          "params": {
+            "level": "L2"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1479,
+            "mean": 1478.8,
+            "std": 1.7
+          },
+          "delta_pct": 3.1,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 24.833 ms"
+        },
+        {
+          "transform": "st_cache_cs",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "cs"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1434,
+            "mean": 1434.0,
+            "std": 1.5
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 25.243 ms"
+        },
+        {
+          "transform": "st_cache_wt",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "wt"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1434,
+            "mean": 1434.0,
+            "std": 1.6
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 24.843 ms"
+        },
+        {
+          "transform": "st_cache_wb",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "wb"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1434,
+            "mean": 1434.1,
+            "std": 1.6
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 24.604 ms"
+        },
+        {
+          "transform": "split_ld",
+          "name": "split_vector_loads",
+          "params": {},
+          "changed": false,
+          "status": "no_change"
+        },
+        {
+          "transform": "cache_ca",
+          "name": "cache_hints",
+          "params": {
+            "policy": "ca"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1434,
+            "mean": 1434.0,
+            "std": 1.6
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 27.105 ms"
+        },
+        {
+          "transform": "cache_cv",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cv"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1438,
+            "mean": 1437.6,
+            "std": 1.9
+          },
+          "delta_pct": 0.3,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 24.782 ms"
+        },
+        {
+          "transform": "reorder_lf",
+          "name": "reorder",
+          "params": {
+            "strategy": "loads_first"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 2173,
+            "mean": 2173.4,
+            "std": 2.0
+          },
+          "delta_pct": 51.5,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 22.972 ms"
+        },
+        {
+          "transform": "reorder_sl",
+          "name": "reorder",
+          "params": {
+            "strategy": "stores_last"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 2174,
+            "mean": 2173.7,
+            "std": 1.9
+          },
+          "delta_pct": 51.6,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 22.909 ms"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(6,6,6)",
+      "m": 6,
+      "n": 6,
+      "k": 6,
+      "baseline_cycles": 1645,
+      "baseline_ptxas": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 19.883 ms",
+      "transforms": [
+        {
+          "transform": "vec_ld",
+          "name": "vectorize_loads",
+          "params": {},
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1227,
+            "mean": 1227.4,
+            "std": 1.5
+          },
+          "delta_pct": -25.4,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 72 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 17.596 ms"
+        },
+        {
+          "transform": "cache_cs",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cs"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1645,
+            "mean": 1645.6,
+            "std": 1.4
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 19.971 ms"
+        },
+        {
+          "transform": "cache_cg",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cg"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 2340,
+            "mean": 2340.0,
+            "std": 1.7
+          },
+          "delta_pct": 42.2,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 19.967 ms"
+        },
+        {
+          "transform": "maxnreg_32",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 32
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 3992,
+            "mean": 3992.2,
+            "std": 2.4
+          },
+          "delta_pct": 142.7,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    360 bytes stack frame, 492 bytes spill stores, 492 bytes spill loads\nptxas info    : Used 32 registers, used 0 barriers, 360 bytes cumulative stack size, 384 bytes cmem[0]\nptxas info    : Compile time = 23.631 ms"
+        },
+        {
+          "transform": "maxnreg_64",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 64
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1765,
+            "mean": 1764.7,
+            "std": 1.6
+          },
+          "delta_pct": 7.3,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 64 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 20.171 ms"
+        },
+        {
+          "transform": "maxnreg_128",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 128
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1215,
+            "mean": 1214.9,
+            "std": 1.7
+          },
+          "delta_pct": -26.1,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 20.261 ms"
+        },
+        {
+          "transform": "maxnreg_255",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 255
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1215,
+            "mean": 1215.1,
+            "std": 1.9
+          },
+          "delta_pct": -26.1,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 20.223 ms"
+        },
+        {
+          "transform": "reorder_cp",
+          "name": "reorder",
+          "params": {
+            "strategy": "critical_path"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1638,
+            "mean": 1637.4,
+            "std": 1.6
+          },
+          "delta_pct": -0.4,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 18.904 ms"
+        },
+        {
+          "transform": "reorder_il",
+          "name": "reorder",
+          "params": {
+            "strategy": "interleave"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1590,
+            "mean": 1590.3,
+            "std": 1.4
+          },
+          "delta_pct": -3.3,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 19.189 ms"
+        },
+        {
+          "transform": "vec_st",
+          "name": "vectorize_stores",
+          "params": {},
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1170,
+            "mean": 1170.0,
+            "std": 1.9
+          },
+          "delta_pct": -28.9,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 72 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 16.394 ms"
+        },
+        {
+          "transform": "prefetch_L1",
+          "name": "prefetch",
+          "params": {
+            "level": "L1"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1323,
+            "mean": 1322.5,
+            "std": 1.2
+          },
+          "delta_pct": -19.6,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 72 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 19.828 ms"
+        },
+        {
+          "transform": "prefetch_L2",
+          "name": "prefetch",
+          "params": {
+            "level": "L2"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1323,
+            "mean": 1322.5,
+            "std": 1.1
+          },
+          "delta_pct": -19.6,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 72 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 29.470 ms"
+        },
+        {
+          "transform": "st_cache_cs",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "cs"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1645,
+            "mean": 1645.5,
+            "std": 1.5
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 20.040 ms"
+        },
+        {
+          "transform": "st_cache_wt",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "wt"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1645,
+            "mean": 1645.3,
+            "std": 1.5
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 19.912 ms"
+        },
+        {
+          "transform": "st_cache_wb",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "wb"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1645,
+            "mean": 1645.1,
+            "std": 1.6
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 19.997 ms"
+        },
+        {
+          "transform": "split_ld",
+          "name": "split_vector_loads",
+          "params": {},
+          "changed": false,
+          "status": "no_change"
+        },
+        {
+          "transform": "cache_ca",
+          "name": "cache_hints",
+          "params": {
+            "policy": "ca"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1645,
+            "mean": 1645.1,
+            "std": 1.5
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 20.046 ms"
+        },
+        {
+          "transform": "cache_cv",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cv"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 2340,
+            "mean": 2340.0,
+            "std": 1.9
+          },
+          "delta_pct": 42.2,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 19.948 ms"
+        },
+        {
+          "transform": "reorder_lf",
+          "name": "reorder",
+          "params": {
+            "strategy": "loads_first"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1638,
+            "mean": 1637.6,
+            "std": 1.6
+          },
+          "delta_pct": -0.4,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 18.920 ms"
+        },
+        {
+          "transform": "reorder_sl",
+          "name": "reorder",
+          "params": {
+            "strategy": "stores_last"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1637,
+            "mean": 1637.2,
+            "std": 1.6
+          },
+          "delta_pct": -0.5,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 19.097 ms"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(6,8,8)",
+      "m": 6,
+      "n": 8,
+      "k": 8,
+      "baseline_cycles": 1741,
+      "baseline_ptxas": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 38.312 ms",
+      "transforms": [
+        {
+          "transform": "vec_ld",
+          "name": "vectorize_loads",
+          "params": {},
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1577,
+            "mean": 1576.9,
+            "std": 1.2
+          },
+          "delta_pct": -9.4,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 38.208 ms"
+        },
+        {
+          "transform": "cache_cs",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cs"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1741,
+            "mean": 1740.5,
+            "std": 1.2
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 38.891 ms"
+        },
+        {
+          "transform": "cache_cg",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cg"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1866,
+            "mean": 1865.3,
+            "std": 1.8
+          },
+          "delta_pct": 7.2,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 39.310 ms"
+        },
+        {
+          "transform": "maxnreg_32",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 32
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 7981,
+            "mean": 7981.2,
+            "std": 2.5
+          },
+          "delta_pct": 358.4,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    728 bytes stack frame, 904 bytes spill stores, 1340 bytes spill loads\nptxas info    : Used 32 registers, used 0 barriers, 728 bytes cumulative stack size, 384 bytes cmem[0]\nptxas info    : Compile time = 47.837 ms"
+        },
+        {
+          "transform": "maxnreg_64",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 64
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 3121,
+            "mean": 3120.9,
+            "std": 1.2
+          },
+          "delta_pct": 79.3,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    328 bytes stack frame, 312 bytes spill stores, 460 bytes spill loads\nptxas info    : Used 64 registers, used 0 barriers, 328 bytes cumulative stack size, 384 bytes cmem[0]\nptxas info    : Compile time = 50.049 ms"
+        },
+        {
+          "transform": "maxnreg_128",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 128
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1730,
+            "mean": 1729.5,
+            "std": 1.7
+          },
+          "delta_pct": -0.6,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 128 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 51.989 ms"
+        },
+        {
+          "transform": "maxnreg_255",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 255
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1623,
+            "mean": 1621.9,
+            "std": 3.2
+          },
+          "delta_pct": -6.8,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 163 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 41.708 ms"
+        },
+        {
+          "transform": "reorder_cp",
+          "name": "reorder",
+          "params": {
+            "strategy": "critical_path"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 2649,
+            "mean": 2648.8,
+            "std": 1.8
+          },
+          "delta_pct": 52.2,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 72 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 36.608 ms"
+        },
+        {
+          "transform": "reorder_il",
+          "name": "reorder",
+          "params": {
+            "strategy": "interleave"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 2253,
+            "mean": 2252.9,
+            "std": 1.5
+          },
+          "delta_pct": 29.4,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 72 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 39.465 ms"
+        },
+        {
+          "transform": "vec_st",
+          "name": "vectorize_stores",
+          "params": {},
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1515,
+            "mean": 1514.5,
+            "std": 1.3
+          },
+          "delta_pct": -13.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 128 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 33.972 ms"
+        },
+        {
+          "transform": "prefetch_L1",
+          "name": "prefetch",
+          "params": {
+            "level": "L1"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1767,
+            "mean": 1766.6,
+            "std": 1.3
+          },
+          "delta_pct": 1.5,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 41.290 ms"
+        },
+        {
+          "transform": "prefetch_L2",
+          "name": "prefetch",
+          "params": {
+            "level": "L2"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1767,
+            "mean": 1766.6,
+            "std": 1.4
+          },
+          "delta_pct": 1.5,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 39.596 ms"
+        },
+        {
+          "transform": "st_cache_cs",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "cs"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1741,
+            "mean": 1740.3,
+            "std": 1.1
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 39.054 ms"
+        },
+        {
+          "transform": "st_cache_wt",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "wt"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1741,
+            "mean": 1740.5,
+            "std": 1.1
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 38.312 ms"
+        },
+        {
+          "transform": "st_cache_wb",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "wb"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1741,
+            "mean": 1740.5,
+            "std": 1.0
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 38.385 ms"
+        },
+        {
+          "transform": "split_ld",
+          "name": "split_vector_loads",
+          "params": {},
+          "changed": false,
+          "status": "no_change"
+        },
+        {
+          "transform": "cache_ca",
+          "name": "cache_hints",
+          "params": {
+            "policy": "ca"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1741,
+            "mean": 1740.5,
+            "std": 1.1
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 39.114 ms"
+        },
+        {
+          "transform": "cache_cv",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cv"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1866,
+            "mean": 1865.4,
+            "std": 1.9
+          },
+          "delta_pct": 7.2,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 56.960 ms"
+        },
+        {
+          "transform": "reorder_lf",
+          "name": "reorder",
+          "params": {
+            "strategy": "loads_first"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 2649,
+            "mean": 2648.8,
+            "std": 1.7
+          },
+          "delta_pct": 52.2,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 72 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 36.802 ms"
+        },
+        {
+          "transform": "reorder_sl",
+          "name": "reorder",
+          "params": {
+            "strategy": "stores_last"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 2649,
+            "mean": 2648.7,
+            "std": 1.8
+          },
+          "delta_pct": 52.2,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 72 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 36.408 ms"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(8,8,4)",
+      "m": 8,
+      "n": 8,
+      "k": 4,
+      "baseline_cycles": 1538,
+      "baseline_ptxas": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 27.138 ms",
+      "transforms": [
+        {
+          "transform": "vec_ld",
+          "name": "vectorize_loads",
+          "params": {},
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1452,
+            "mean": 1451.5,
+            "std": 1.3
+          },
+          "delta_pct": -5.6,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 21.389 ms"
+        },
+        {
+          "transform": "cache_cs",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cs"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1538,
+            "mean": 1537.5,
+            "std": 1.2
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 27.182 ms"
+        },
+        {
+          "transform": "cache_cg",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cg"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1581,
+            "mean": 1581.1,
+            "std": 1.5
+          },
+          "delta_pct": 2.8,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 27.279 ms"
+        },
+        {
+          "transform": "maxnreg_32",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 32
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 3588,
+            "mean": 3587.8,
+            "std": 1.4
+          },
+          "delta_pct": 133.3,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    344 bytes stack frame, 428 bytes spill stores, 436 bytes spill loads\nptxas info    : Used 32 registers, used 0 barriers, 344 bytes cumulative stack size, 384 bytes cmem[0]\nptxas info    : Compile time = 28.920 ms"
+        },
+        {
+          "transform": "maxnreg_64",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 64
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1519,
+            "mean": 1518.3,
+            "std": 1.2
+          },
+          "delta_pct": -1.2,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 64 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 27.073 ms"
+        },
+        {
+          "transform": "maxnreg_128",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 128
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1326,
+            "mean": 1325.5,
+            "std": 1.2
+          },
+          "delta_pct": -13.8,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 128 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 29.306 ms"
+        },
+        {
+          "transform": "maxnreg_255",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 255
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1326,
+            "mean": 1325.6,
+            "std": 1.1
+          },
+          "delta_pct": -13.8,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 128 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 29.272 ms"
+        },
+        {
+          "transform": "reorder_cp",
+          "name": "reorder",
+          "params": {
+            "strategy": "critical_path"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1395,
+            "mean": 1394.4,
+            "std": 1.1
+          },
+          "delta_pct": -9.3,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 72 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 26.347 ms"
+        },
+        {
+          "transform": "reorder_il",
+          "name": "reorder",
+          "params": {
+            "strategy": "interleave"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1366,
+            "mean": 1365.5,
+            "std": 1.1
+          },
+          "delta_pct": -11.2,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 64 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 26.459 ms"
+        },
+        {
+          "transform": "vec_st",
+          "name": "vectorize_stores",
+          "params": {},
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1498,
+            "mean": 1497.9,
+            "std": 1.5
+          },
+          "delta_pct": -2.6,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 40 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 18.781 ms"
+        },
+        {
+          "transform": "prefetch_L1",
+          "name": "prefetch",
+          "params": {
+            "level": "L1"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1593,
+            "mean": 1592.5,
+            "std": 1.2
+          },
+          "delta_pct": 3.6,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 27.151 ms"
+        },
+        {
+          "transform": "prefetch_L2",
+          "name": "prefetch",
+          "params": {
+            "level": "L2"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1593,
+            "mean": 1592.4,
+            "std": 1.3
+          },
+          "delta_pct": 3.6,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 27.469 ms"
+        },
+        {
+          "transform": "st_cache_cs",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "cs"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1538,
+            "mean": 1537.5,
+            "std": 1.2
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 27.434 ms"
+        },
+        {
+          "transform": "st_cache_wt",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "wt"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1538,
+            "mean": 1537.3,
+            "std": 1.3
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 27.214 ms"
+        },
+        {
+          "transform": "st_cache_wb",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "wb"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1538,
+            "mean": 1537.7,
+            "std": 1.2
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 27.461 ms"
+        },
+        {
+          "transform": "split_ld",
+          "name": "split_vector_loads",
+          "params": {},
+          "changed": false,
+          "status": "no_change"
+        },
+        {
+          "transform": "cache_ca",
+          "name": "cache_hints",
+          "params": {
+            "policy": "ca"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1538,
+            "mean": 1537.2,
+            "std": 1.2
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 27.187 ms"
+        },
+        {
+          "transform": "cache_cv",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cv"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1581,
+            "mean": 1581.0,
+            "std": 1.6
+          },
+          "delta_pct": 2.8,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 27.255 ms"
+        },
+        {
+          "transform": "reorder_lf",
+          "name": "reorder",
+          "params": {
+            "strategy": "loads_first"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1395,
+            "mean": 1394.6,
+            "std": 1.2
+          },
+          "delta_pct": -9.3,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 72 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 26.112 ms"
+        },
+        {
+          "transform": "reorder_sl",
+          "name": "reorder",
+          "params": {
+            "strategy": "stores_last"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1395,
+            "mean": 1394.5,
+            "std": 1.2
+          },
+          "delta_pct": -9.3,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 72 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 25.975 ms"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(8,8,8)",
+      "m": 8,
+      "n": 8,
+      "k": 8,
+      "baseline_cycles": 2452,
+      "baseline_ptxas": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 80 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 55.365 ms",
+      "transforms": [
+        {
+          "transform": "vec_ld",
+          "name": "vectorize_loads",
+          "params": {},
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 2261,
+            "mean": 2260.8,
+            "std": 1.3
+          },
+          "delta_pct": -7.8,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 41.569 ms"
+        },
+        {
+          "transform": "cache_cs",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cs"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 2452,
+            "mean": 2451.5,
+            "std": 1.2
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 80 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 55.377 ms"
+        },
+        {
+          "transform": "cache_cg",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cg"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 2569,
+            "mean": 2568.5,
+            "std": 1.7
+          },
+          "delta_pct": 4.8,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 80 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 57.469 ms"
+        },
+        {
+          "transform": "maxnreg_32",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 32
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 6728,
+            "mean": 6728.2,
+            "std": 2.6
+          },
+          "delta_pct": 174.4,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    512 bytes stack frame, 696 bytes spill stores, 812 bytes spill loads\nptxas info    : Used 32 registers, used 0 barriers, 512 bytes cumulative stack size, 384 bytes cmem[0]\nptxas info    : Compile time = 62.654 ms"
+        },
+        {
+          "transform": "maxnreg_64",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 64
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 3325,
+            "mean": 3324.8,
+            "std": 1.8
+          },
+          "delta_pct": 35.6,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    160 bytes stack frame, 196 bytes spill stores, 220 bytes spill loads\nptxas info    : Used 64 registers, used 0 barriers, 160 bytes cumulative stack size, 384 bytes cmem[0]\nptxas info    : Compile time = 54.370 ms"
+        },
+        {
+          "transform": "maxnreg_128",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 128
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1997,
+            "mean": 1996.9,
+            "std": 1.7
+          },
+          "delta_pct": -18.6,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 122 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 74.845 ms"
+        },
+        {
+          "transform": "maxnreg_255",
+          "name": "register_budget",
+          "params": {
+            "max_regs": 255
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1875,
+            "mean": 1874.2,
+            "std": 4.0
+          },
+          "delta_pct": -23.5,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 167 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 62.131 ms"
+        },
+        {
+          "transform": "reorder_cp",
+          "name": "reorder",
+          "params": {
+            "strategy": "critical_path"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1921,
+            "mean": 1920.6,
+            "std": 1.3
+          },
+          "delta_pct": -21.7,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 128 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 61.384 ms"
+        },
+        {
+          "transform": "reorder_il",
+          "name": "reorder",
+          "params": {
+            "strategy": "interleave"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 2534,
+            "mean": 2534.0,
+            "std": 1.9
+          },
+          "delta_pct": 3.3,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 59.847 ms"
+        },
+        {
+          "transform": "vec_st",
+          "name": "vectorize_stores",
+          "params": {},
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 2080,
+            "mean": 2080.0,
+            "std": 2.2
+          },
+          "delta_pct": -15.2,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 96 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 42.472 ms"
+        },
+        {
+          "transform": "prefetch_L1",
+          "name": "prefetch",
+          "params": {
+            "level": "L1"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 2522,
+            "mean": 2521.9,
+            "std": 1.3
+          },
+          "delta_pct": 2.9,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 80 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 55.525 ms"
+        },
+        {
+          "transform": "prefetch_L2",
+          "name": "prefetch",
+          "params": {
+            "level": "L2"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 2522,
+            "mean": 2521.9,
+            "std": 1.3
+          },
+          "delta_pct": 2.9,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 80 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 55.844 ms"
+        },
+        {
+          "transform": "st_cache_cs",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "cs"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 2452,
+            "mean": 2451.4,
+            "std": 1.1
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 80 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 54.748 ms"
+        },
+        {
+          "transform": "st_cache_wt",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "wt"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 2452,
+            "mean": 2451.5,
+            "std": 1.1
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 80 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 55.054 ms"
+        },
+        {
+          "transform": "st_cache_wb",
+          "name": "store_cache_hints",
+          "params": {
+            "policy": "wb"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 2452,
+            "mean": 2451.6,
+            "std": 1.2
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 80 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 55.375 ms"
+        },
+        {
+          "transform": "split_ld",
+          "name": "split_vector_loads",
+          "params": {},
+          "changed": false,
+          "status": "no_change"
+        },
+        {
+          "transform": "cache_ca",
+          "name": "cache_hints",
+          "params": {
+            "policy": "ca"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 2452,
+            "mean": 2451.5,
+            "std": 1.2
+          },
+          "delta_pct": 0.0,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 80 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 59.641 ms"
+        },
+        {
+          "transform": "cache_cv",
+          "name": "cache_hints",
+          "params": {
+            "policy": "cv"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 2569,
+            "mean": 2568.5,
+            "std": 1.9
+          },
+          "delta_pct": 4.8,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 80 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 56.263 ms"
+        },
+        {
+          "transform": "reorder_lf",
+          "name": "reorder",
+          "params": {
+            "strategy": "loads_first"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1921,
+            "mean": 1920.6,
+            "std": 1.5
+          },
+          "delta_pct": -21.7,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 128 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 60.952 ms"
+        },
+        {
+          "transform": "reorder_sl",
+          "name": "reorder",
+          "params": {
+            "strategy": "stores_last"
+          },
+          "changed": true,
+          "compiles": true,
+          "status": "ok",
+          "cycles": {
+            "median": 1921,
+            "mean": 1920.5,
+            "std": 1.4
+          },
+          "delta_pct": -21.7,
+          "ptxas_info": "ptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function 'gemm_tile' for 'sm_89'\nptxas info    : Function properties for gemm_tile\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 128 registers, used 0 barriers, 384 bytes cmem[0]\nptxas info    : Compile time = 65.582 ms"
+        }
+      ]
+    }
+  ]
+}

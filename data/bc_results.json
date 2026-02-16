@@ -1,0 +1,401 @@
+{
+  "n_samples": 259,
+  "n_features": 25,
+  "n_classes": 21,
+  "baselines": {
+    "majority": {
+      "action": "stop",
+      "accuracy": 0.2471
+    },
+    "random": {
+      "accuracy": 0.0444
+    }
+  },
+  "gbt_loko": {
+    "accuracy": 0.5212,
+    "per_action": {
+      "vec_ld": {
+        "n_true": 54,
+        "n_pred": 60,
+        "n_correct": 41,
+        "precision": 0.683,
+        "recall": 0.759,
+        "f1": 0.719
+      },
+      "vec_st": {
+        "n_true": 56,
+        "n_pred": 62,
+        "n_correct": 41,
+        "precision": 0.661,
+        "recall": 0.732,
+        "f1": 0.695
+      },
+      "cache_cs": {
+        "n_true": 5,
+        "n_pred": 7,
+        "n_correct": 1,
+        "precision": 0.143,
+        "recall": 0.2,
+        "f1": 0.167
+      },
+      "cache_cg": {
+        "n_true": 7,
+        "n_pred": 11,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "cache_ca": {
+        "n_true": 1,
+        "n_pred": 0,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "cache_cv": {
+        "n_true": 2,
+        "n_pred": 5,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "st_cache_cs": {
+        "n_true": 1,
+        "n_pred": 0,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "st_cache_wt": {
+        "n_true": 2,
+        "n_pred": 2,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "st_cache_wb": {
+        "n_true": 1,
+        "n_pred": 3,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "maxnreg_64": {
+        "n_true": 9,
+        "n_pred": 8,
+        "n_correct": 5,
+        "precision": 0.625,
+        "recall": 0.556,
+        "f1": 0.588
+      },
+      "maxnreg_128": {
+        "n_true": 20,
+        "n_pred": 20,
+        "n_correct": 10,
+        "precision": 0.5,
+        "recall": 0.5,
+        "f1": 0.5
+      },
+      "maxnreg_255": {
+        "n_true": 9,
+        "n_pred": 9,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "reorder_cp": {
+        "n_true": 14,
+        "n_pred": 4,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "reorder_il": {
+        "n_true": 9,
+        "n_pred": 1,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "reorder_lf": {
+        "n_true": 2,
+        "n_pred": 0,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "reorder_sl": {
+        "n_true": 3,
+        "n_pred": 0,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "stop": {
+        "n_true": 64,
+        "n_pred": 67,
+        "n_correct": 37,
+        "precision": 0.552,
+        "recall": 0.578,
+        "f1": 0.565
+      }
+    }
+  },
+  "rf_loko": {
+    "accuracy": 0.5907,
+    "per_action": {
+      "vec_ld": {
+        "n_true": 54,
+        "n_pred": 69,
+        "n_correct": 44,
+        "precision": 0.638,
+        "recall": 0.815,
+        "f1": 0.715
+      },
+      "vec_st": {
+        "n_true": 56,
+        "n_pred": 75,
+        "n_correct": 50,
+        "precision": 0.667,
+        "recall": 0.893,
+        "f1": 0.763
+      },
+      "cache_cs": {
+        "n_true": 5,
+        "n_pred": 0,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "cache_cg": {
+        "n_true": 7,
+        "n_pred": 0,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "cache_ca": {
+        "n_true": 1,
+        "n_pred": 0,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "cache_cv": {
+        "n_true": 2,
+        "n_pred": 0,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "st_cache_cs": {
+        "n_true": 1,
+        "n_pred": 0,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "st_cache_wt": {
+        "n_true": 2,
+        "n_pred": 0,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "st_cache_wb": {
+        "n_true": 1,
+        "n_pred": 0,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "maxnreg_64": {
+        "n_true": 9,
+        "n_pred": 0,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "maxnreg_128": {
+        "n_true": 20,
+        "n_pred": 10,
+        "n_correct": 6,
+        "precision": 0.6,
+        "recall": 0.3,
+        "f1": 0.4
+      },
+      "maxnreg_255": {
+        "n_true": 9,
+        "n_pred": 3,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "reorder_cp": {
+        "n_true": 14,
+        "n_pred": 1,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "reorder_il": {
+        "n_true": 9,
+        "n_pred": 0,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "reorder_lf": {
+        "n_true": 2,
+        "n_pred": 0,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "reorder_sl": {
+        "n_true": 3,
+        "n_pred": 0,
+        "n_correct": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "stop": {
+        "n_true": 64,
+        "n_pred": 101,
+        "n_correct": 53,
+        "precision": 0.525,
+        "recall": 0.828,
+        "f1": 0.642
+      }
+    }
+  },
+  "feature_importance": [
+    {
+      "feature": "store_ratio",
+      "importance": 0.2693
+    },
+    {
+      "feature": "mem_ratio",
+      "importance": 0.1508
+    },
+    {
+      "feature": "maxnreg",
+      "importance": 0.1173
+    },
+    {
+      "feature": "load_ratio",
+      "importance": 0.0958
+    },
+    {
+      "feature": "n_ld_global",
+      "importance": 0.0652
+    },
+    {
+      "feature": "n_ld_global_vec",
+      "importance": 0.0597
+    },
+    {
+      "feature": "n_instructions",
+      "importance": 0.0438
+    },
+    {
+      "feature": "compute_to_mem",
+      "importance": 0.0336
+    },
+    {
+      "feature": "n_cache_hint_ld",
+      "importance": 0.0334
+    },
+    {
+      "feature": "vec_ld_ratio",
+      "importance": 0.0272
+    },
+    {
+      "feature": "fma_ratio",
+      "importance": 0.0253
+    },
+    {
+      "feature": "hint_ld_ratio",
+      "importance": 0.0157
+    },
+    {
+      "feature": "compute_ratio",
+      "importance": 0.0155
+    },
+    {
+      "feature": "n_st_global",
+      "importance": 0.0144
+    },
+    {
+      "feature": "n_cache_hint_st",
+      "importance": 0.0087
+    },
+    {
+      "feature": "n_fma",
+      "importance": 0.0069
+    },
+    {
+      "feature": "n_f32_regs",
+      "importance": 0.0059
+    },
+    {
+      "feature": "total_regs",
+      "importance": 0.0044
+    },
+    {
+      "feature": "n_st_global_vec",
+      "importance": 0.0031
+    },
+    {
+      "feature": "hint_st_ratio",
+      "importance": 0.0023
+    },
+    {
+      "feature": "vec_st_ratio",
+      "importance": 0.0016
+    },
+    {
+      "feature": "n_ld_param",
+      "importance": 0.0
+    },
+    {
+      "feature": "n_prefetch",
+      "importance": 0.0
+    },
+    {
+      "feature": "n_branch",
+      "importance": 0.0
+    },
+    {
+      "feature": "n_b64_regs",
+      "importance": 0.0
+    }
+  ],
+  "replay": {
+    "first_action_accuracy": 0.7344
+  }
+}

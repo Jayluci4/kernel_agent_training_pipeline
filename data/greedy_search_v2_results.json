@@ -1,0 +1,3689 @@
+{
+  "gpu": "NVIDIA L4",
+  "n_warmup": 50,
+  "n_runs": 200,
+  "n_transforms": 20,
+  "wall_time_s": 6030.4,
+  "n_kernels": 64,
+  "results": [
+    {
+      "kernel": "gemm_tile(2,2,2)",
+      "m": 2,
+      "n": 2,
+      "k": 2,
+      "baseline_cycles": 409,
+      "final_cycles": 409,
+      "total_improvement": "+0.0%",
+      "n_steps": 0,
+      "transforms_applied": [],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 409,
+            "mean": 408.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "0.0%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(2,2,4)",
+      "m": 2,
+      "n": 2,
+      "k": 4,
+      "baseline_cycles": 434,
+      "final_cycles": 432,
+      "total_improvement": "-0.5%",
+      "n_steps": 1,
+      "transforms_applied": [
+        "maxnreg_64"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 434,
+            "mean": 433.9,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "maxnreg_64",
+          "cycles": {
+            "median": 432,
+            "mean": 431.4,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-0.5%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(2,2,6)",
+      "m": 2,
+      "n": 2,
+      "k": 6,
+      "baseline_cycles": 521,
+      "final_cycles": 441,
+      "total_improvement": "-15.4%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "reorder_lf",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 521,
+            "mean": 520.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 466,
+            "mean": 465.6,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-10.6%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 444,
+            "mean": 443.7,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-14.8%"
+        },
+        {
+          "step": 3,
+          "transform": "reorder_lf",
+          "cycles": {
+            "median": 441,
+            "mean": 440.4,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-15.4%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(2,2,8)",
+      "m": 2,
+      "n": 2,
+      "k": 8,
+      "baseline_cycles": 538,
+      "final_cycles": 461,
+      "total_improvement": "-14.3%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "reorder_il",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 538,
+            "mean": 537.7,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 489,
+            "mean": 488.7,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-9.1%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 465,
+            "mean": 464.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-13.6%"
+        },
+        {
+          "step": 3,
+          "transform": "reorder_il",
+          "cycles": {
+            "median": 461,
+            "mean": 460.6,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-14.3%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(2,4,2)",
+      "m": 2,
+      "n": 4,
+      "k": 2,
+      "baseline_cycles": 468,
+      "final_cycles": 409,
+      "total_improvement": "-12.6%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "cache_cs",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 468,
+            "mean": 467.4,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 444,
+            "mean": 443.6,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-5.1%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 411,
+            "mean": 410.6,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-12.2%"
+        },
+        {
+          "step": 3,
+          "transform": "cache_cs",
+          "cycles": {
+            "median": 409,
+            "mean": 408.5,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-12.6%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(2,4,4)",
+      "m": 2,
+      "n": 4,
+      "k": 4,
+      "baseline_cycles": 542,
+      "final_cycles": 448,
+      "total_improvement": "-17.3%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "reorder_cp",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 542,
+            "mean": 542.0,
+            "std": 1.3
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 503,
+            "mean": 503.5,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "-7.2%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 451,
+            "mean": 451.5,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "-16.8%"
+        },
+        {
+          "step": 3,
+          "transform": "reorder_cp",
+          "cycles": {
+            "median": 448,
+            "mean": 448.6,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "-17.3%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(2,4,6)",
+      "m": 2,
+      "n": 4,
+      "k": 6,
+      "baseline_cycles": 638,
+      "final_cycles": 519,
+      "total_improvement": "-18.7%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "maxnreg_64",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 638,
+            "mean": 637.9,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 609,
+            "mean": 609.1,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-4.5%"
+        },
+        {
+          "step": 2,
+          "transform": "maxnreg_64",
+          "cycles": {
+            "median": 579,
+            "mean": 579.0,
+            "std": 1.3
+          },
+          "delta_vs_baseline": "-9.2%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 519,
+            "mean": 519.5,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "-18.7%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(2,4,8)",
+      "m": 2,
+      "n": 4,
+      "k": 8,
+      "baseline_cycles": 853,
+      "final_cycles": 538,
+      "total_improvement": "-36.9%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "maxnreg_64",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 853,
+            "mean": 852.9,
+            "std": 1.7
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "maxnreg_64",
+          "cycles": {
+            "median": 692,
+            "mean": 691.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-18.9%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 583,
+            "mean": 582.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-31.7%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 538,
+            "mean": 537.5,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-36.9%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(2,6,2)",
+      "m": 2,
+      "n": 6,
+      "k": 2,
+      "baseline_cycles": 535,
+      "final_cycles": 426,
+      "total_improvement": "-20.4%",
+      "n_steps": 2,
+      "transforms_applied": [
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 535,
+            "mean": 535.1,
+            "std": 1.3
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 494,
+            "mean": 494.7,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "-7.7%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 426,
+            "mean": 426.3,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "-20.4%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(2,6,4)",
+      "m": 2,
+      "n": 6,
+      "k": 4,
+      "baseline_cycles": 628,
+      "final_cycles": 523,
+      "total_improvement": "-16.7%",
+      "n_steps": 4,
+      "transforms_applied": [
+        "cache_cs",
+        "maxnreg_128",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 628,
+            "mean": 627.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 593,
+            "mean": 592.7,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-5.6%"
+        },
+        {
+          "step": 2,
+          "transform": "maxnreg_128",
+          "cycles": {
+            "median": 587,
+            "mean": 586.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-6.5%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 525,
+            "mean": 524.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-16.4%"
+        },
+        {
+          "step": 4,
+          "transform": "cache_cs",
+          "cycles": {
+            "median": 523,
+            "mean": 522.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-16.7%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(2,6,6)",
+      "m": 2,
+      "n": 6,
+      "k": 6,
+      "baseline_cycles": 888,
+      "final_cycles": 732,
+      "total_improvement": "-17.6%",
+      "n_steps": 1,
+      "transforms_applied": [
+        "reorder_cp"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 888,
+            "mean": 887.8,
+            "std": 2.1
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "reorder_cp",
+          "cycles": {
+            "median": 732,
+            "mean": 732.1,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-17.6%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(2,6,8)",
+      "m": 2,
+      "n": 6,
+      "k": 8,
+      "baseline_cycles": 1274,
+      "final_cycles": 646,
+      "total_improvement": "-49.3%",
+      "n_steps": 4,
+      "transforms_applied": [
+        "cache_cs",
+        "maxnreg_128",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 1274,
+            "mean": 1273.6,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "maxnreg_128",
+          "cycles": {
+            "median": 835,
+            "mean": 834.6,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-34.5%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 687,
+            "mean": 686.7,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-46.1%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 648,
+            "mean": 647.7,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-49.1%"
+        },
+        {
+          "step": 4,
+          "transform": "cache_cs",
+          "cycles": {
+            "median": 646,
+            "mean": 645.5,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-49.3%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(2,8,2)",
+      "m": 2,
+      "n": 8,
+      "k": 2,
+      "baseline_cycles": 563,
+      "final_cycles": 443,
+      "total_improvement": "-21.3%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "cache_cg",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 563,
+            "mean": 563.2,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 534,
+            "mean": 534.1,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-5.2%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 445,
+            "mean": 445.4,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-21.0%"
+        },
+        {
+          "step": 3,
+          "transform": "cache_cg",
+          "cycles": {
+            "median": 443,
+            "mean": 443.6,
+            "std": 1.5
+          },
+          "delta_vs_baseline": "-21.3%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(2,8,4)",
+      "m": 2,
+      "n": 8,
+      "k": 4,
+      "baseline_cycles": 908,
+      "final_cycles": 680,
+      "total_improvement": "-25.1%",
+      "n_steps": 1,
+      "transforms_applied": [
+        "reorder_il"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 908,
+            "mean": 908.1,
+            "std": 1.7
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "reorder_il",
+          "cycles": {
+            "median": 680,
+            "mean": 680.0,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-25.1%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(2,8,6)",
+      "m": 2,
+      "n": 8,
+      "k": 6,
+      "baseline_cycles": 900,
+      "final_cycles": 793,
+      "total_improvement": "-11.9%",
+      "n_steps": 2,
+      "transforms_applied": [
+        "cache_cs",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 900,
+            "mean": 899.5,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 795,
+            "mean": 794.8,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-11.7%"
+        },
+        {
+          "step": 2,
+          "transform": "cache_cs",
+          "cycles": {
+            "median": 793,
+            "mean": 793.3,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-11.9%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(2,8,8)",
+      "m": 2,
+      "n": 8,
+      "k": 8,
+      "baseline_cycles": 1003,
+      "final_cycles": 1003,
+      "total_improvement": "+0.0%",
+      "n_steps": 0,
+      "transforms_applied": [],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 1003,
+            "mean": 1003.0,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "0.0%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(4,2,2)",
+      "m": 4,
+      "n": 2,
+      "k": 2,
+      "baseline_cycles": 466,
+      "final_cycles": 410,
+      "total_improvement": "-12.0%",
+      "n_steps": 5,
+      "transforms_applied": [
+        "cache_cs",
+        "maxnreg_255",
+        "reorder_cp",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 466,
+            "mean": 465.4,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 445,
+            "mean": 444.5,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-4.5%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 441,
+            "mean": 440.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-5.4%"
+        },
+        {
+          "step": 3,
+          "transform": "reorder_cp",
+          "cycles": {
+            "median": 413,
+            "mean": 412.6,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-11.4%"
+        },
+        {
+          "step": 4,
+          "transform": "cache_cs",
+          "cycles": {
+            "median": 411,
+            "mean": 410.6,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-11.8%"
+        },
+        {
+          "step": 5,
+          "transform": "maxnreg_255",
+          "cycles": {
+            "median": 410,
+            "mean": 410.3,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-12.0%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(4,2,4)",
+      "m": 4,
+      "n": 2,
+      "k": 4,
+      "baseline_cycles": 526,
+      "final_cycles": 451,
+      "total_improvement": "-14.3%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "reorder_cp",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 526,
+            "mean": 526.1,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 496,
+            "mean": 496.6,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "-5.7%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 454,
+            "mean": 454.6,
+            "std": 1.5
+          },
+          "delta_vs_baseline": "-13.7%"
+        },
+        {
+          "step": 3,
+          "transform": "reorder_cp",
+          "cycles": {
+            "median": 451,
+            "mean": 451.7,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "-14.3%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(4,2,6)",
+      "m": 4,
+      "n": 2,
+      "k": 6,
+      "baseline_cycles": 623,
+      "final_cycles": 501,
+      "total_improvement": "-19.6%",
+      "n_steps": 2,
+      "transforms_applied": [
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 623,
+            "mean": 622.9,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 541,
+            "mean": 541.6,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "-13.2%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 501,
+            "mean": 501.4,
+            "std": 1.7
+          },
+          "delta_vs_baseline": "-19.6%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(4,2,8)",
+      "m": 4,
+      "n": 2,
+      "k": 8,
+      "baseline_cycles": 742,
+      "final_cycles": 545,
+      "total_improvement": "-26.5%",
+      "n_steps": 4,
+      "transforms_applied": [
+        "cache_cv",
+        "maxnreg_64",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 742,
+            "mean": 742.6,
+            "std": 2.3
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "maxnreg_64",
+          "cycles": {
+            "median": 656,
+            "mean": 656.0,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-11.6%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 594,
+            "mean": 594.5,
+            "std": 1.4
+          },
+          "delta_vs_baseline": "-19.9%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 547,
+            "mean": 546.7,
+            "std": 1.5
+          },
+          "delta_vs_baseline": "-26.3%"
+        },
+        {
+          "step": 4,
+          "transform": "cache_cv",
+          "cycles": {
+            "median": 545,
+            "mean": 545.4,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-26.5%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(4,4,2)",
+      "m": 4,
+      "n": 4,
+      "k": 2,
+      "baseline_cycles": 537,
+      "final_cycles": 441,
+      "total_improvement": "-17.9%",
+      "n_steps": 2,
+      "transforms_applied": [
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 537,
+            "mean": 537.5,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 496,
+            "mean": 495.7,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-7.6%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 441,
+            "mean": 441.5,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-17.9%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(4,4,4)",
+      "m": 4,
+      "n": 4,
+      "k": 4,
+      "baseline_cycles": 688,
+      "final_cycles": 588,
+      "total_improvement": "-14.5%",
+      "n_steps": 2,
+      "transforms_applied": [
+        "cache_ca",
+        "vec_ld"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 688,
+            "mean": 687.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 591,
+            "mean": 590.6,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-14.1%"
+        },
+        {
+          "step": 2,
+          "transform": "cache_ca",
+          "cycles": {
+            "median": 588,
+            "mean": 588.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-14.5%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(4,4,6)",
+      "m": 4,
+      "n": 4,
+      "k": 6,
+      "baseline_cycles": 935,
+      "final_cycles": 628,
+      "total_improvement": "-32.8%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "maxnreg_64",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 935,
+            "mean": 935.1,
+            "std": 1.5
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "maxnreg_64",
+          "cycles": {
+            "median": 762,
+            "mean": 762.1,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-18.5%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 667,
+            "mean": 667.0,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-28.7%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 628,
+            "mean": 628.5,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-32.8%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(4,4,8)",
+      "m": 4,
+      "n": 4,
+      "k": 8,
+      "baseline_cycles": 1250,
+      "final_cycles": 661,
+      "total_improvement": "-47.1%",
+      "n_steps": 4,
+      "transforms_applied": [
+        "maxnreg_128",
+        "reorder_sl",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 1250,
+            "mean": 1250.3,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "maxnreg_128",
+          "cycles": {
+            "median": 863,
+            "mean": 863.0,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-31.0%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 755,
+            "mean": 754.4,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-39.6%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 706,
+            "mean": 705.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-43.5%"
+        },
+        {
+          "step": 4,
+          "transform": "reorder_sl",
+          "cycles": {
+            "median": 661,
+            "mean": 661.5,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-47.1%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(4,6,2)",
+      "m": 4,
+      "n": 6,
+      "k": 2,
+      "baseline_cycles": 646,
+      "final_cycles": 474,
+      "total_improvement": "-26.6%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "cache_cg",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 646,
+            "mean": 646.0,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 549,
+            "mean": 549.1,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-15.0%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 475,
+            "mean": 474.6,
+            "std": 1.5
+          },
+          "delta_vs_baseline": "-26.5%"
+        },
+        {
+          "step": 3,
+          "transform": "cache_cg",
+          "cycles": {
+            "median": 474,
+            "mean": 474.5,
+            "std": 1.5
+          },
+          "delta_vs_baseline": "-26.6%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(4,6,4)",
+      "m": 4,
+      "n": 6,
+      "k": 4,
+      "baseline_cycles": 824,
+      "final_cycles": 624,
+      "total_improvement": "-24.3%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "maxnreg_64",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 824,
+            "mean": 824.1,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 715,
+            "mean": 715.1,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-13.2%"
+        },
+        {
+          "step": 2,
+          "transform": "maxnreg_64",
+          "cycles": {
+            "median": 706,
+            "mean": 706.1,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-14.3%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 624,
+            "mean": 624.5,
+            "std": 1.3
+          },
+          "delta_vs_baseline": "-24.3%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(4,6,6)",
+      "m": 4,
+      "n": 6,
+      "k": 6,
+      "baseline_cycles": 1495,
+      "final_cycles": 739,
+      "total_improvement": "-50.6%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "maxnreg_255",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 1495,
+            "mean": 1494.5,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "maxnreg_255",
+          "cycles": {
+            "median": 935,
+            "mean": 934.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-37.5%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 810,
+            "mean": 810.5,
+            "std": 1.5
+          },
+          "delta_vs_baseline": "-45.8%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 739,
+            "mean": 739.6,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "-50.6%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(4,6,8)",
+      "m": 4,
+      "n": 6,
+      "k": 8,
+      "baseline_cycles": 1829,
+      "final_cycles": 835,
+      "total_improvement": "-54.3%",
+      "n_steps": 4,
+      "transforms_applied": [
+        "maxnreg_128",
+        "reorder_cp",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 1829,
+            "mean": 1829.2,
+            "std": 1.4
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "maxnreg_128",
+          "cycles": {
+            "median": 1103,
+            "mean": 1103.1,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "-39.7%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 909,
+            "mean": 908.6,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-50.3%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 841,
+            "mean": 840.7,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-54.0%"
+        },
+        {
+          "step": 4,
+          "transform": "reorder_cp",
+          "cycles": {
+            "median": 835,
+            "mean": 834.5,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-54.3%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(4,8,2)",
+      "m": 4,
+      "n": 8,
+      "k": 2,
+      "baseline_cycles": 712,
+      "final_cycles": 499,
+      "total_improvement": "-29.9%",
+      "n_steps": 4,
+      "transforms_applied": [
+        "cache_cg",
+        "reorder_il",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 712,
+            "mean": 712.1,
+            "std": 1.3
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 625,
+            "mean": 625.0,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-12.2%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 506,
+            "mean": 505.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-28.9%"
+        },
+        {
+          "step": 3,
+          "transform": "reorder_il",
+          "cycles": {
+            "median": 502,
+            "mean": 501.4,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-29.5%"
+        },
+        {
+          "step": 4,
+          "transform": "cache_cg",
+          "cycles": {
+            "median": 499,
+            "mean": 498.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-29.9%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(4,8,4)",
+      "m": 4,
+      "n": 8,
+      "k": 4,
+      "baseline_cycles": 954,
+      "final_cycles": 740,
+      "total_improvement": "-22.4%",
+      "n_steps": 2,
+      "transforms_applied": [
+        "reorder_il",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 954,
+            "mean": 953.7,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 811,
+            "mean": 810.7,
+            "std": 1.3
+          },
+          "delta_vs_baseline": "-15.0%"
+        },
+        {
+          "step": 2,
+          "transform": "reorder_il",
+          "cycles": {
+            "median": 740,
+            "mean": 739.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-22.4%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(4,8,6)",
+      "m": 4,
+      "n": 8,
+      "k": 6,
+      "baseline_cycles": 1105,
+      "final_cycles": 847,
+      "total_improvement": "-23.3%",
+      "n_steps": 4,
+      "transforms_applied": [
+        "cache_cg",
+        "maxnreg_128",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 1105,
+            "mean": 1105.0,
+            "std": 1.9
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 1006,
+            "mean": 1006.5,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "-9.0%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 886,
+            "mean": 885.7,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-19.8%"
+        },
+        {
+          "step": 3,
+          "transform": "maxnreg_128",
+          "cycles": {
+            "median": 849,
+            "mean": 848.8,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-23.2%"
+        },
+        {
+          "step": 4,
+          "transform": "cache_cg",
+          "cycles": {
+            "median": 847,
+            "mean": 846.5,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-23.3%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(4,8,8)",
+      "m": 4,
+      "n": 8,
+      "k": 8,
+      "baseline_cycles": 1419,
+      "final_cycles": 964,
+      "total_improvement": "-32.1%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "maxnreg_128",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 1419,
+            "mean": 1418.9,
+            "std": 1.7
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 1137,
+            "mean": 1136.6,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-19.9%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 1052,
+            "mean": 1052.5,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "-25.9%"
+        },
+        {
+          "step": 3,
+          "transform": "maxnreg_128",
+          "cycles": {
+            "median": 964,
+            "mean": 963.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-32.1%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(6,2,2)",
+      "m": 6,
+      "n": 2,
+      "k": 2,
+      "baseline_cycles": 535,
+      "final_cycles": 431,
+      "total_improvement": "-19.4%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "reorder_cp",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 535,
+            "mean": 535.1,
+            "std": 1.3
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 485,
+            "mean": 485.0,
+            "std": 1.3
+          },
+          "delta_vs_baseline": "-9.3%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 462,
+            "mean": 462.4,
+            "std": 1.5
+          },
+          "delta_vs_baseline": "-13.6%"
+        },
+        {
+          "step": 3,
+          "transform": "reorder_cp",
+          "cycles": {
+            "median": 431,
+            "mean": 431.5,
+            "std": 1.7
+          },
+          "delta_vs_baseline": "-19.4%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(6,2,4)",
+      "m": 6,
+      "n": 2,
+      "k": 4,
+      "baseline_cycles": 598,
+      "final_cycles": 491,
+      "total_improvement": "-17.9%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "reorder_sl",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 598,
+            "mean": 597.6,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 563,
+            "mean": 562.5,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-5.9%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 497,
+            "mean": 496.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-16.9%"
+        },
+        {
+          "step": 3,
+          "transform": "reorder_sl",
+          "cycles": {
+            "median": 491,
+            "mean": 490.4,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-17.9%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(6,2,6)",
+      "m": 6,
+      "n": 2,
+      "k": 6,
+      "baseline_cycles": 855,
+      "final_cycles": 567,
+      "total_improvement": "-33.7%",
+      "n_steps": 4,
+      "transforms_applied": [
+        "cache_cg",
+        "maxnreg_255",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 855,
+            "mean": 854.9,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "maxnreg_255",
+          "cycles": {
+            "median": 713,
+            "mean": 713.4,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-16.6%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 636,
+            "mean": 635.4,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-25.6%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 569,
+            "mean": 568.7,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-33.5%"
+        },
+        {
+          "step": 4,
+          "transform": "cache_cg",
+          "cycles": {
+            "median": 567,
+            "mean": 566.6,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-33.7%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(6,2,8)",
+      "m": 6,
+      "n": 2,
+      "k": 8,
+      "baseline_cycles": 979,
+      "final_cycles": 622,
+      "total_improvement": "-36.5%",
+      "n_steps": 4,
+      "transforms_applied": [
+        "maxnreg_128",
+        "reorder_cp",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 979,
+            "mean": 979.2,
+            "std": 1.4
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "maxnreg_128",
+          "cycles": {
+            "median": 760,
+            "mean": 759.5,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-22.4%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 703,
+            "mean": 702.7,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-28.2%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 631,
+            "mean": 630.4,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-35.5%"
+        },
+        {
+          "step": 4,
+          "transform": "reorder_cp",
+          "cycles": {
+            "median": 622,
+            "mean": 621.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-36.5%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(6,4,2)",
+      "m": 6,
+      "n": 4,
+      "k": 2,
+      "baseline_cycles": 663,
+      "final_cycles": 469,
+      "total_improvement": "-29.3%",
+      "n_steps": 2,
+      "transforms_applied": [
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 663,
+            "mean": 663.1,
+            "std": 1.3
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 527,
+            "mean": 526.9,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-20.5%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 469,
+            "mean": 469.6,
+            "std": 1.4
+          },
+          "delta_vs_baseline": "-29.3%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(6,4,4)",
+      "m": 6,
+      "n": 4,
+      "k": 4,
+      "baseline_cycles": 823,
+      "final_cycles": 632,
+      "total_improvement": "-23.2%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "maxnreg_64",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 823,
+            "mean": 823.2,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 703,
+            "mean": 703.1,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-14.6%"
+        },
+        {
+          "step": 2,
+          "transform": "maxnreg_64",
+          "cycles": {
+            "median": 686,
+            "mean": 686.0,
+            "std": 1.3
+          },
+          "delta_vs_baseline": "-16.6%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 632,
+            "mean": 632.4,
+            "std": 1.4
+          },
+          "delta_vs_baseline": "-23.2%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(6,4,6)",
+      "m": 6,
+      "n": 4,
+      "k": 6,
+      "baseline_cycles": 1375,
+      "final_cycles": 732,
+      "total_improvement": "-46.8%",
+      "n_steps": 4,
+      "transforms_applied": [
+        "maxnreg_128",
+        "st_cache_wb",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 1375,
+            "mean": 1374.9,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 873,
+            "mean": 872.4,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-36.5%"
+        },
+        {
+          "step": 2,
+          "transform": "maxnreg_128",
+          "cycles": {
+            "median": 803,
+            "mean": 803.4,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-41.6%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 733,
+            "mean": 732.5,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-46.7%"
+        },
+        {
+          "step": 4,
+          "transform": "st_cache_wb",
+          "cycles": {
+            "median": 732,
+            "mean": 732.3,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-46.8%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(6,4,8)",
+      "m": 6,
+      "n": 4,
+      "k": 8,
+      "baseline_cycles": 1535,
+      "final_cycles": 789,
+      "total_improvement": "-48.6%",
+      "n_steps": 4,
+      "transforms_applied": [
+        "cache_cv",
+        "maxnreg_128",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 1535,
+            "mean": 1535.5,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "maxnreg_128",
+          "cycles": {
+            "median": 1090,
+            "mean": 1090.2,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "-29.0%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 926,
+            "mean": 926.6,
+            "std": 1.5
+          },
+          "delta_vs_baseline": "-39.7%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 790,
+            "mean": 790.5,
+            "std": 1.4
+          },
+          "delta_vs_baseline": "-48.5%"
+        },
+        {
+          "step": 4,
+          "transform": "cache_cv",
+          "cycles": {
+            "median": 789,
+            "mean": 789.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-48.6%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(6,6,2)",
+      "m": 6,
+      "n": 6,
+      "k": 2,
+      "baseline_cycles": 766,
+      "final_cycles": 527,
+      "total_improvement": "-31.2%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "reorder_il",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 766,
+            "mean": 765.6,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 653,
+            "mean": 652.6,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-14.8%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 532,
+            "mean": 531.5,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-30.5%"
+        },
+        {
+          "step": 3,
+          "transform": "reorder_il",
+          "cycles": {
+            "median": 527,
+            "mean": 526.6,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-31.2%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(6,6,4)",
+      "m": 6,
+      "n": 6,
+      "k": 4,
+      "baseline_cycles": 973,
+      "final_cycles": 672,
+      "total_improvement": "-30.9%",
+      "n_steps": 5,
+      "transforms_applied": [
+        "maxnreg_128",
+        "reorder_lf",
+        "st_cache_cs",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 973,
+            "mean": 973.4,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 782,
+            "mean": 782.4,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-19.6%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 753,
+            "mean": 752.6,
+            "std": 1.5
+          },
+          "delta_vs_baseline": "-22.6%"
+        },
+        {
+          "step": 3,
+          "transform": "maxnreg_128",
+          "cycles": {
+            "median": 676,
+            "mean": 675.6,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-30.5%"
+        },
+        {
+          "step": 4,
+          "transform": "st_cache_cs",
+          "cycles": {
+            "median": 673,
+            "mean": 673.4,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-30.8%"
+        },
+        {
+          "step": 5,
+          "transform": "reorder_lf",
+          "cycles": {
+            "median": 672,
+            "mean": 672.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-30.9%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(6,6,6)",
+      "m": 6,
+      "n": 6,
+      "k": 6,
+      "baseline_cycles": 1623,
+      "final_cycles": 883,
+      "total_improvement": "-45.6%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "maxnreg_255",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 1623,
+            "mean": 1623.1,
+            "std": 1.3
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 1155,
+            "mean": 1155.2,
+            "std": 1.5
+          },
+          "delta_vs_baseline": "-28.8%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 936,
+            "mean": 935.6,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-42.3%"
+        },
+        {
+          "step": 3,
+          "transform": "maxnreg_255",
+          "cycles": {
+            "median": 883,
+            "mean": 883.6,
+            "std": 1.4
+          },
+          "delta_vs_baseline": "-45.6%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(6,6,8)",
+      "m": 6,
+      "n": 6,
+      "k": 8,
+      "baseline_cycles": 2045,
+      "final_cycles": 1025,
+      "total_improvement": "-49.9%",
+      "n_steps": 4,
+      "transforms_applied": [
+        "maxnreg_255",
+        "st_cache_wt",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 2045,
+            "mean": 2045.2,
+            "std": 1.8
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "maxnreg_255",
+          "cycles": {
+            "median": 1316,
+            "mean": 1316.4,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-35.6%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 1123,
+            "mean": 1122.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-45.1%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 1026,
+            "mean": 1025.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-49.8%"
+        },
+        {
+          "step": 4,
+          "transform": "st_cache_wt",
+          "cycles": {
+            "median": 1025,
+            "mean": 1025.4,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-49.9%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(6,8,2)",
+      "m": 6,
+      "n": 8,
+      "k": 2,
+      "baseline_cycles": 872,
+      "final_cycles": 613,
+      "total_improvement": "-29.7%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "cache_cg",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 872,
+            "mean": 871.6,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 751,
+            "mean": 751.0,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-13.9%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 616,
+            "mean": 615.9,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-29.4%"
+        },
+        {
+          "step": 3,
+          "transform": "cache_cg",
+          "cycles": {
+            "median": 613,
+            "mean": 613.7,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "-29.7%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(6,8,4)",
+      "m": 6,
+      "n": 8,
+      "k": 4,
+      "baseline_cycles": 1188,
+      "final_cycles": 806,
+      "total_improvement": "-32.2%",
+      "n_steps": 4,
+      "transforms_applied": [
+        "maxnreg_128",
+        "reorder_il",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 1188,
+            "mean": 1188.1,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 1014,
+            "mean": 1014.1,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-14.6%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 892,
+            "mean": 891.7,
+            "std": 1.5
+          },
+          "delta_vs_baseline": "-24.9%"
+        },
+        {
+          "step": 3,
+          "transform": "maxnreg_128",
+          "cycles": {
+            "median": 872,
+            "mean": 872.6,
+            "std": 1.5
+          },
+          "delta_vs_baseline": "-26.6%"
+        },
+        {
+          "step": 4,
+          "transform": "reorder_il",
+          "cycles": {
+            "median": 806,
+            "mean": 806.5,
+            "std": 1.5
+          },
+          "delta_vs_baseline": "-32.2%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(6,8,6)",
+      "m": 6,
+      "n": 8,
+      "k": 6,
+      "baseline_cycles": 1576,
+      "final_cycles": 972,
+      "total_improvement": "-38.3%",
+      "n_steps": 4,
+      "transforms_applied": [
+        "maxnreg_128",
+        "reorder_cp",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 1576,
+            "mean": 1576.3,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 1227,
+            "mean": 1227.5,
+            "std": 2.0
+          },
+          "delta_vs_baseline": "-22.1%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 1127,
+            "mean": 1126.6,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-28.5%"
+        },
+        {
+          "step": 3,
+          "transform": "maxnreg_128",
+          "cycles": {
+            "median": 1054,
+            "mean": 1054.5,
+            "std": 1.5
+          },
+          "delta_vs_baseline": "-33.1%"
+        },
+        {
+          "step": 4,
+          "transform": "reorder_cp",
+          "cycles": {
+            "median": 972,
+            "mean": 972.6,
+            "std": 1.4
+          },
+          "delta_vs_baseline": "-38.3%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(6,8,8)",
+      "m": 6,
+      "n": 8,
+      "k": 8,
+      "baseline_cycles": 1733,
+      "final_cycles": 1192,
+      "total_improvement": "-31.2%",
+      "n_steps": 4,
+      "transforms_applied": [
+        "maxnreg_255",
+        "reorder_cp",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 1733,
+            "mean": 1733.1,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 1508,
+            "mean": 1507.6,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-13.0%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 1349,
+            "mean": 1351.4,
+            "std": 4.5
+          },
+          "delta_vs_baseline": "-22.2%"
+        },
+        {
+          "step": 3,
+          "transform": "maxnreg_255",
+          "cycles": {
+            "median": 1205,
+            "mean": 1204.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-30.5%"
+        },
+        {
+          "step": 4,
+          "transform": "reorder_cp",
+          "cycles": {
+            "median": 1192,
+            "mean": 1191.6,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-31.2%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(8,2,2)",
+      "m": 8,
+      "n": 2,
+      "k": 2,
+      "baseline_cycles": 582,
+      "final_cycles": 448,
+      "total_improvement": "-23.0%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "reorder_cp",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 582,
+            "mean": 582.0,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 510,
+            "mean": 510.2,
+            "std": 1.3
+          },
+          "delta_vs_baseline": "-12.4%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 487,
+            "mean": 487.6,
+            "std": 1.7
+          },
+          "delta_vs_baseline": "-16.3%"
+        },
+        {
+          "step": 3,
+          "transform": "reorder_cp",
+          "cycles": {
+            "median": 448,
+            "mean": 448.5,
+            "std": 1.5
+          },
+          "delta_vs_baseline": "-23.0%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(8,2,4)",
+      "m": 8,
+      "n": 2,
+      "k": 4,
+      "baseline_cycles": 712,
+      "final_cycles": 527,
+      "total_improvement": "-26.0%",
+      "n_steps": 4,
+      "transforms_applied": [
+        "maxnreg_64",
+        "reorder_cp",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 712,
+            "mean": 712.1,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 645,
+            "mean": 645.0,
+            "std": 1.3
+          },
+          "delta_vs_baseline": "-9.4%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 629,
+            "mean": 629.0,
+            "std": 1.3
+          },
+          "delta_vs_baseline": "-11.7%"
+        },
+        {
+          "step": 3,
+          "transform": "maxnreg_64",
+          "cycles": {
+            "median": 529,
+            "mean": 529.7,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "-25.7%"
+        },
+        {
+          "step": 4,
+          "transform": "reorder_cp",
+          "cycles": {
+            "median": 527,
+            "mean": 527.6,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "-26.0%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(8,2,6)",
+      "m": 8,
+      "n": 2,
+      "k": 6,
+      "baseline_cycles": 1030,
+      "final_cycles": 770,
+      "total_improvement": "-25.2%",
+      "n_steps": 1,
+      "transforms_applied": [
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 1030,
+            "mean": 1030.1,
+            "std": 1.4
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 770,
+            "mean": 769.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-25.2%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(8,2,8)",
+      "m": 8,
+      "n": 2,
+      "k": 8,
+      "baseline_cycles": 1148,
+      "final_cycles": 694,
+      "total_improvement": "-39.5%",
+      "n_steps": 4,
+      "transforms_applied": [
+        "maxnreg_128",
+        "reorder_cp",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 1148,
+            "mean": 1147.3,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "maxnreg_128",
+          "cycles": {
+            "median": 865,
+            "mean": 865.1,
+            "std": 1.4
+          },
+          "delta_vs_baseline": "-24.7%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 790,
+            "mean": 790.0,
+            "std": 1.3
+          },
+          "delta_vs_baseline": "-31.2%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 709,
+            "mean": 708.8,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-38.2%"
+        },
+        {
+          "step": 4,
+          "transform": "reorder_cp",
+          "cycles": {
+            "median": 694,
+            "mean": 693.5,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-39.5%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(8,4,2)",
+      "m": 8,
+      "n": 4,
+      "k": 2,
+      "baseline_cycles": 734,
+      "final_cycles": 492,
+      "total_improvement": "-33.0%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "reorder_cp",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 734,
+            "mean": 733.9,
+            "std": 1.3
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 662,
+            "mean": 662.6,
+            "std": 1.5
+          },
+          "delta_vs_baseline": "-9.8%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 628,
+            "mean": 628.1,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-14.4%"
+        },
+        {
+          "step": 3,
+          "transform": "reorder_cp",
+          "cycles": {
+            "median": 492,
+            "mean": 492.4,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "-33.0%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(8,4,4)",
+      "m": 8,
+      "n": 4,
+      "k": 4,
+      "baseline_cycles": 1042,
+      "final_cycles": 710,
+      "total_improvement": "-31.9%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "maxnreg_64",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 1042,
+            "mean": 1041.7,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "maxnreg_64",
+          "cycles": {
+            "median": 878,
+            "mean": 877.7,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-15.7%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 786,
+            "mean": 785.6,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-24.6%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 710,
+            "mean": 709.4,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-31.9%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(8,4,6)",
+      "m": 8,
+      "n": 4,
+      "k": 6,
+      "baseline_cycles": 1418,
+      "final_cycles": 1050,
+      "total_improvement": "-26.0%",
+      "n_steps": 2,
+      "transforms_applied": [
+        "maxnreg_128",
+        "reorder_il"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 1418,
+            "mean": 1418.1,
+            "std": 1.7
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "reorder_il",
+          "cycles": {
+            "median": 1055,
+            "mean": 1054.8,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-25.6%"
+        },
+        {
+          "step": 2,
+          "transform": "maxnreg_128",
+          "cycles": {
+            "median": 1050,
+            "mean": 1049.8,
+            "std": 1.5
+          },
+          "delta_vs_baseline": "-26.0%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(8,4,8)",
+      "m": 8,
+      "n": 4,
+      "k": 8,
+      "baseline_cycles": 1628,
+      "final_cycles": 927,
+      "total_improvement": "-43.1%",
+      "n_steps": 4,
+      "transforms_applied": [
+        "maxnreg_128",
+        "reorder_cp",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 1628,
+            "mean": 1627.8,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "maxnreg_128",
+          "cycles": {
+            "median": 1212,
+            "mean": 1211.7,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-25.6%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 1064,
+            "mean": 1063.4,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-34.6%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 940,
+            "mean": 939.3,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-42.3%"
+        },
+        {
+          "step": 4,
+          "transform": "reorder_cp",
+          "cycles": {
+            "median": 927,
+            "mean": 927.6,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "-43.1%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(8,6,2)",
+      "m": 8,
+      "n": 6,
+      "k": 2,
+      "baseline_cycles": 855,
+      "final_cycles": 611,
+      "total_improvement": "-28.5%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "maxnreg_128",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 855,
+            "mean": 854.6,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 748,
+            "mean": 747.6,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-12.5%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 675,
+            "mean": 674.9,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-21.1%"
+        },
+        {
+          "step": 3,
+          "transform": "maxnreg_128",
+          "cycles": {
+            "median": 611,
+            "mean": 610.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-28.5%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(8,6,4)",
+      "m": 8,
+      "n": 6,
+      "k": 4,
+      "baseline_cycles": 1340,
+      "final_cycles": 779,
+      "total_improvement": "-41.9%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "maxnreg_128",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 1340,
+            "mean": 1340.1,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "maxnreg_128",
+          "cycles": {
+            "median": 1096,
+            "mean": 1096.2,
+            "std": 1.4
+          },
+          "delta_vs_baseline": "-18.2%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 939,
+            "mean": 939.2,
+            "std": 1.3
+          },
+          "delta_vs_baseline": "-29.9%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 779,
+            "mean": 779.5,
+            "std": 1.5
+          },
+          "delta_vs_baseline": "-41.9%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(8,6,6)",
+      "m": 8,
+      "n": 6,
+      "k": 6,
+      "baseline_cycles": 1772,
+      "final_cycles": 1284,
+      "total_improvement": "-27.5%",
+      "n_steps": 2,
+      "transforms_applied": [
+        "maxnreg_255",
+        "reorder_il"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 1772,
+            "mean": 1772.2,
+            "std": 1.7
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "reorder_il",
+          "cycles": {
+            "median": 1352,
+            "mean": 1352.1,
+            "std": 1.7
+          },
+          "delta_vs_baseline": "-23.7%"
+        },
+        {
+          "step": 2,
+          "transform": "maxnreg_255",
+          "cycles": {
+            "median": 1284,
+            "mean": 1283.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-27.5%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(8,6,8)",
+      "m": 8,
+      "n": 6,
+      "k": 8,
+      "baseline_cycles": 2181,
+      "final_cycles": 1189,
+      "total_improvement": "-45.5%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "maxnreg_255",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 2181,
+            "mean": 2181.1,
+            "std": 2.0
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "maxnreg_255",
+          "cycles": {
+            "median": 1506,
+            "mean": 1505.6,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-30.9%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 1333,
+            "mean": 1333.5,
+            "std": 1.6
+          },
+          "delta_vs_baseline": "-38.9%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 1189,
+            "mean": 1189.5,
+            "std": 1.7
+          },
+          "delta_vs_baseline": "-45.5%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(8,8,2)",
+      "m": 8,
+      "n": 8,
+      "k": 2,
+      "baseline_cycles": 956,
+      "final_cycles": 724,
+      "total_improvement": "-24.3%",
+      "n_steps": 3,
+      "transforms_applied": [
+        "maxnreg_128",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 956,
+            "mean": 955.5,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 888,
+            "mean": 887.5,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-7.1%"
+        },
+        {
+          "step": 2,
+          "transform": "maxnreg_128",
+          "cycles": {
+            "median": 795,
+            "mean": 794.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-16.8%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 724,
+            "mean": 723.4,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-24.3%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(8,8,4)",
+      "m": 8,
+      "n": 8,
+      "k": 4,
+      "baseline_cycles": 1530,
+      "final_cycles": 1002,
+      "total_improvement": "-34.5%",
+      "n_steps": 4,
+      "transforms_applied": [
+        "maxnreg_128",
+        "reorder_sl",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 1530,
+            "mean": 1529.6,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "maxnreg_128",
+          "cycles": {
+            "median": 1318,
+            "mean": 1317.5,
+            "std": 1.0
+          },
+          "delta_vs_baseline": "-13.9%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 1061,
+            "mean": 1060.7,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-30.7%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 1018,
+            "mean": 1017.6,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-33.5%"
+        },
+        {
+          "step": 4,
+          "transform": "reorder_sl",
+          "cycles": {
+            "median": 1002,
+            "mean": 1001.5,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-34.5%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(8,8,6)",
+      "m": 8,
+      "n": 8,
+      "k": 6,
+      "baseline_cycles": 2054,
+      "final_cycles": 1238,
+      "total_improvement": "-39.7%",
+      "n_steps": 5,
+      "transforms_applied": [
+        "cache_cg",
+        "maxnreg_128",
+        "st_cache_wt",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 2054,
+            "mean": 2053.3,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "maxnreg_128",
+          "cycles": {
+            "median": 1576,
+            "mean": 1575.4,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-23.3%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 1407,
+            "mean": 1406.6,
+            "std": 1.4
+          },
+          "delta_vs_baseline": "-31.5%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 1241,
+            "mean": 1241.1,
+            "std": 1.3
+          },
+          "delta_vs_baseline": "-39.6%"
+        },
+        {
+          "step": 4,
+          "transform": "cache_cg",
+          "cycles": {
+            "median": 1240,
+            "mean": 1239.6,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-39.6%"
+        },
+        {
+          "step": 5,
+          "transform": "st_cache_wt",
+          "cycles": {
+            "median": 1238,
+            "mean": 1237.5,
+            "std": 1.3
+          },
+          "delta_vs_baseline": "-39.7%"
+        }
+      ]
+    },
+    {
+      "kernel": "gemm_tile(8,8,8)",
+      "m": 8,
+      "n": 8,
+      "k": 8,
+      "baseline_cycles": 2444,
+      "final_cycles": 1434,
+      "total_improvement": "-41.3%",
+      "n_steps": 4,
+      "transforms_applied": [
+        "maxnreg_255",
+        "reorder_il",
+        "vec_ld",
+        "vec_st"
+      ],
+      "trace": [
+        {
+          "step": 0,
+          "transform": "baseline",
+          "cycles": {
+            "median": 2444,
+            "mean": 2444.1,
+            "std": 1.3
+          },
+          "delta_vs_baseline": "0.0%"
+        },
+        {
+          "step": 1,
+          "transform": "maxnreg_255",
+          "cycles": {
+            "median": 1856,
+            "mean": 1856.0,
+            "std": 1.7
+          },
+          "delta_vs_baseline": "-24.1%"
+        },
+        {
+          "step": 2,
+          "transform": "vec_ld",
+          "cycles": {
+            "median": 1640,
+            "mean": 1639.7,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-32.9%"
+        },
+        {
+          "step": 3,
+          "transform": "vec_st",
+          "cycles": {
+            "median": 1444,
+            "mean": 1443.7,
+            "std": 1.1
+          },
+          "delta_vs_baseline": "-40.9%"
+        },
+        {
+          "step": 4,
+          "transform": "reorder_il",
+          "cycles": {
+            "median": 1434,
+            "mean": 1433.5,
+            "std": 1.2
+          },
+          "delta_vs_baseline": "-41.3%"
+        }
+      ]
+    }
+  ]
+}
