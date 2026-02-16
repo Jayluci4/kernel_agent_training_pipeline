@@ -291,7 +291,19 @@ def inject_cycle_counter(ptx_source):
 
 
 def measure_cycles(ptx_str, m, n, k, n_warmup=50, n_runs=200):
-    """Measure kernel cycles via subprocess. Returns median cycles or None on error."""
+    """Measure kernel cycles via persistent worker. Returns median cycles or None on error.
+
+    Uses fast_measure module which maintains a long-lived subprocess with CUDA context,
+    eliminating the ~3s CuPy import overhead per measurement.
+    """
+    try:
+        from .fast_measure import measure_cycles_fast
+        return measure_cycles_fast(ptx_str, m, n, k, n_warmup, n_runs)
+    except ImportError:
+        # Fallback to subprocess-per-call if fast_measure unavailable
+        pass
+
+    # Fallback implementation (slower, spawns subprocess per call)
     spec = gemm_tile(m=m, n=n, k=k)
 
     try:
