@@ -18,7 +18,8 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-SAWO_ROOT = "/home/jayantlohia16/experiment/gemma-intelligent/SAWO"
+# Compute repo root dynamically (2 levels up from this file)
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
 # ---------------------------------------------------------------------------
 # Worker subprocess script (runs in its own process with CuPy)
@@ -31,8 +32,8 @@ import numpy as np
 
 # One-time import
 import cupy as cp
-from experiments.chronos.harness.ptx_compiler import compile_ptx, load_kernel
-from experiments.chronos.harness.ptx_templates import gemm_tile
+from pipeline.harness.ptx_compiler import compile_ptx, load_kernel
+from pipeline.harness.ptx_templates import gemm_tile
 
 # Signal ready
 print(json.dumps({{"status": "ready"}}), flush=True)
@@ -206,7 +207,7 @@ def _start_worker():
     if _worker_proc is not None and _worker_proc.poll() is None:
         return True  # already running
 
-    script = _WORKER_SCRIPT.format(repo_root=SAWO_ROOT)
+    script = _WORKER_SCRIPT.format(repo_root=REPO_ROOT)
     try:
         _worker_proc = subprocess.Popen(
             [sys.executable, "-c", script],
@@ -325,7 +326,7 @@ def get_baseline_cycles(m, n, k):
     """Get cached baseline cycles for a kernel. Measures once with full precision."""
     key = (m, n, k)
     if key not in _baseline_cache:
-        from experiments.chronos.harness.ptx_templates import gemm_tile
+        from pipeline.harness.ptx_templates import gemm_tile
         spec = gemm_tile(m=m, n=n, k=k)
         # Full precision for baselines (cached, only measured once)
         cycles = _send_request(spec.ptx_source, m, n, k, n_warmup=50, n_runs=200)
