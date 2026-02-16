@@ -148,5 +148,10 @@ class TransformPolicy(nn.Module):
         Returns: [B] log probabilities
         """
         logits = self.forward(features, action_mask, action_history)
+        # Clamp finite logits to prevent overflow
+        finite_mask = logits.isfinite()
+        logits = torch.where(finite_mask, logits.clamp(-50, 50), logits)
         log_probs = F.log_softmax(logits, dim=-1)
-        return log_probs.gather(-1, actions.unsqueeze(-1)).squeeze(-1)
+        result = log_probs.gather(-1, actions.unsqueeze(-1)).squeeze(-1)
+        # Clamp result to avoid -inf for numerical stability
+        return result.clamp(min=-50)
