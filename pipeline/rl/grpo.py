@@ -207,6 +207,14 @@ class GRPOTrainer:
             self.policy.load_state_dict(best_state)
         self.ref_policy.load_state_dict(copy.deepcopy(self.policy.state_dict()))
 
+        # Health check: verify weights are finite after BC
+        for name, param in self.policy.named_parameters():
+            if torch.isnan(param).any() or torch.isinf(param).any():
+                logger.error("NaN/inf in policy weights after BC: %s", name)
+            max_val = param.abs().max().item()
+            if max_val > 100:
+                logger.warning("Large weight in %s: max_abs=%.1f", name, max_val)
+
         logger.info("BC warm-start complete. Best accuracy: %.3f", best_acc)
         return best_acc
 
@@ -224,6 +232,14 @@ class GRPOTrainer:
 
         trajectory = []
         for step_i in range(self.max_steps):
+            # Debug: check for NaN/inf in state on first step
+            if step_i == 0:
+                if torch.isnan(features).any() or torch.isinf(features).any():
+                    logger.error("NaN/inf in features: %s", features)
+                feat_max = features.abs().max().item()
+                if feat_max > 1000:
+                    logger.warning("Large feature values (max=%.1f), consider normalization", feat_max)
+
             # Mask stop for first min_steps to force exploration
             rollout_mask = mask.clone()
             if step_i < min_steps:
@@ -355,10 +371,15 @@ class GRPOTrainer:
             policy_loss = -torch.min(surr1, surr2).mean()
 
             # Entropy bonus to prevent mode collapse (6.2)
-            logits = self.policy(features, masks, histories)
-            probs = F.softmax(logits, dim=-1)
-            log_probs_all = F.log_softmax(logits, dim=-1)
-            entropy = -(probs * log_probs_all).sum(dim=-1).mean()
+            # Compute entropy only over valid (unmasked) actions
+            logits_ent = self.policy(features, masks, histories)
+            # Clamp finite logits to match policy's distribution
+            finite = logits_ent.isfinite()
+            logits_ent = torch.where(finite, logits_ent.clamp(-50, 50), logits_ent)
+            probs = F.softmax(logits_ent, dim=-1)
+            log_probs_all = F.log_softmax(logits_ent, dim=-1)
+            # nan_to_num: masked actions have prob=0, log=-inf → 0*-inf=NaN → replace with 0
+            entropy = -(probs * log_probs_all).nan_to_num(0).sum(dim=-1).mean()
             entropy_loss = -self.entropy_coef * entropy
 
             # KL penalty against reference (DeepSeek-R1 unbiased estimator)

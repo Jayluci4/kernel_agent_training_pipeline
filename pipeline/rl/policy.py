@@ -106,7 +106,16 @@ class TransformPolicy(nn.Module):
     def get_distribution(self, features, action_mask, action_history, temperature=1.0):
         """Return Categorical distribution over actions."""
         logits = self.forward(features, action_mask, action_history)
+        # Clamp finite logits to prevent softmax overflow
+        # (-inf from masking is preserved intentionally)
+        finite_mask = logits.isfinite()
+        logits = torch.where(finite_mask, logits.clamp(-50, 50), logits)
         probs = F.softmax(logits / temperature, dim=-1)
+        # Fallback: if softmax produced NaN (all -inf or numerical issue),
+        # use uniform over valid actions
+        if probs.isnan().any():
+            valid = action_mask > 0
+            probs = valid.float() / valid.float().sum(dim=-1, keepdim=True).clamp(min=1)
         return Categorical(probs)
 
     @torch.no_grad()
