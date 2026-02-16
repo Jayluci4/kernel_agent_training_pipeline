@@ -18,8 +18,7 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-# Compute repo root dynamically (2 levels up from this file)
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+SAWO_ROOT = "/home/jayantlohia16/experiment/gemma-intelligent/SAWO"
 
 # ---------------------------------------------------------------------------
 # Worker subprocess script (runs in its own process with CuPy)
@@ -32,8 +31,8 @@ import numpy as np
 
 # One-time import
 import cupy as cp
-from pipeline.harness.ptx_compiler import compile_ptx, load_kernel
-from pipeline.harness.ptx_templates import gemm_tile
+from experiments.chronos.harness.ptx_compiler import compile_ptx, load_kernel
+from experiments.chronos.harness.ptx_templates import gemm_tile
 
 # Signal ready
 print(json.dumps({{"status": "ready"}}), flush=True)
@@ -207,7 +206,7 @@ def _start_worker():
     if _worker_proc is not None and _worker_proc.poll() is None:
         return True  # already running
 
-    script = _WORKER_SCRIPT.format(repo_root=REPO_ROOT)
+    script = _WORKER_SCRIPT.format(repo_root=SAWO_ROOT)
     try:
         _worker_proc = subprocess.Popen(
             [sys.executable, "-c", script],
@@ -314,18 +313,22 @@ def _send_request(ptx_str, m, n, k, n_warmup=50, n_runs=200):
 # Public API
 # ---------------------------------------------------------------------------
 
-def measure_cycles_fast(ptx_str, m, n, k, n_warmup=50, n_runs=200):
-    """Measure kernel cycles via persistent worker. Returns median cycles or None."""
+def measure_cycles_fast(ptx_str, m, n, k, n_warmup=30, n_runs=100):
+    """Measure kernel cycles via persistent worker. Returns median cycles or None.
+
+    Defaults tuned for training speed (30/100). For final eval, use 50/200.
+    """
     return _send_request(ptx_str, m, n, k, n_warmup, n_runs)
 
 
 def get_baseline_cycles(m, n, k):
-    """Get cached baseline cycles for a kernel. Measures once."""
+    """Get cached baseline cycles for a kernel. Measures once with full precision."""
     key = (m, n, k)
     if key not in _baseline_cache:
-        from pipeline.harness.ptx_templates import gemm_tile
+        from experiments.chronos.harness.ptx_templates import gemm_tile
         spec = gemm_tile(m=m, n=n, k=k)
-        cycles = measure_cycles_fast(spec.ptx_source, m, n, k)
+        # Full precision for baselines (cached, only measured once)
+        cycles = _send_request(spec.ptx_source, m, n, k, n_warmup=50, n_runs=200)
         _baseline_cache[key] = cycles
         if cycles is not None:
             logger.debug("Baseline %s: %d cycles", key, cycles)

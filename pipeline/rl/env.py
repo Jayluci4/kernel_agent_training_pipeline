@@ -11,36 +11,30 @@ Done: when "stop" is selected or max_steps reached
 
 import sys
 import os
-import json
 import math
-import subprocess
-import tempfile
-import shutil
 
 import numpy as np
 import torch
 
-REPO_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..")
-)
-sys.path.insert(0, REPO_ROOT)
+SAWO_ROOT = "/home/jayantlohia16/experiment/gemma-intelligent/SAWO"
+sys.path.insert(0, SAWO_ROOT)
 
-from pipeline.harness.ptx_templates import gemm_tile
-from pipeline.transform.parsed_kernel import (
+from experiments.chronos.harness.ptx_templates import gemm_tile
+from experiments.chronos.transform.parsed_kernel import (
     parse_kernel, emit, deep_copy_kernel, BodyLine,
 )
-from pipeline.transform.base import TransformResult
-from pipeline.transform.register_budget import RegisterBudgetTransform
-from pipeline.transform.cache_hints import (
+from experiments.chronos.transform.base import TransformResult
+from experiments.chronos.transform.register_budget import RegisterBudgetTransform
+from experiments.chronos.transform.cache_hints import (
     CacheHintTransform, _find_unhinted_loads, _LD_GLOBAL_PATTERN,
 )
-from pipeline.transform.vectorize_loads import VectorizeLoadsTransform
-from pipeline.transform.vectorize_stores import VectorizeStoresTransform
-from pipeline.transform.prefetch import PrefetchTransform
-from pipeline.transform.store_cache_hints import StoreCacheHintTransform
-from pipeline.transform.split_vectors import SplitVectorLoadsTransform
-from pipeline.transform.reorder import ReorderTransform
-from pipeline.features.kernel_features import (
+from experiments.chronos.transform.vectorize_loads import VectorizeLoadsTransform
+from experiments.chronos.transform.vectorize_stores import VectorizeStoresTransform
+from experiments.chronos.transform.prefetch import PrefetchTransform
+from experiments.chronos.transform.store_cache_hints import StoreCacheHintTransform
+from experiments.chronos.transform.split_vectors import SplitVectorLoadsTransform
+from experiments.chronos.transform.reorder import ReorderTransform
+from experiments.chronos.features.kernel_features import (
     extract_features, features_to_array,
 )
 
@@ -50,7 +44,7 @@ from .policy import (
 )
 
 
-# Label → (transform_name, params)
+# Label -> (transform_name, params)
 LABEL_TO_TRANSFORM = {
     "vec_ld": ("vectorize_loads", {}),
     "vec_st": ("vectorize_stores", {}),
@@ -75,6 +69,7 @@ LABEL_TO_TRANSFORM = {
 }
 
 STEP_COST = 0.005  # Per-step penalty to encourage efficiency
+REWARD_FLOOR = 0.01  # Ignore <1% cycle changes (noise vs real signal)
 
 
 # ---------------------------------------------------------------------------
@@ -128,235 +123,15 @@ def apply_transform(ptx_str, label):
 
 
 # ---------------------------------------------------------------------------
-# Cycle measurement (subprocess-isolated)
-# ---------------------------------------------------------------------------
-
-_MEASURE_SCRIPT = '''
-import sys, os, json
-sys.path.insert(0, {repo_root!r})
-import numpy as np
-
-try:
-    import cupy as cp
-    from pipeline.harness.ptx_compiler import compile_ptx, load_kernel
-    from pipeline.harness.ptx_templates import gemm_tile
-
-    with open({ptx_path!r}) as f:
-        ptx = f.read()
-
-    result = compile_ptx(ptx)
-    if not result.success:
-        print(json.dumps({{"error": "compile: " + result.error}}))
-        sys.exit(0)
-
-    kernel = load_kernel(result.cubin_path, {kernel_name!r})
-    spec = gemm_tile(m={m}, n={n}, k={k})
-
-    with open({untimed_path!r}) as f:
-        untimed_ptx = f.read()
-    uresult = compile_ptx(untimed_ptx)
-    if uresult.success:
-        ukernel = load_kernel(uresult.cubin_path, spec.kernel_name)
-        uargs = spec.args_factory()
-        ukernel(spec.grid, spec.block, uargs)
-        cp.cuda.Device().synchronize()
-        try:
-            correct = spec.validator(uargs)
-        except Exception:
-            correct = False
-    else:
-        correct = False
-
-    if not correct:
-        print(json.dumps({{"error": "incorrect results"}}))
-        sys.exit(0)
-
-    base_args = spec.args_factory()
-    cycles_buf = cp.zeros(1, dtype=cp.uint32)
-    args = (*base_args, cycles_buf)
-
-    for _ in range({n_warmup}):
-        kernel(spec.grid, spec.block, args)
-    cp.cuda.Device().synchronize()
-
-    all_cycles = []
-    for _ in range({n_runs}):
-        cycles_buf[0] = 0
-        kernel(spec.grid, spec.block, args)
-        cp.cuda.Device().synchronize()
-        all_cycles.append(int(cycles_buf[0]))
-
-    arr = np.array(all_cycles)
-    print(json.dumps({{
-        "median": int(np.median(arr)),
-        "mean": round(float(np.mean(arr)), 1),
-        "std": round(float(np.std(arr)), 1),
-    }}))
-
-except Exception as e:
-    print(json.dumps({{"error": str(e)}}))
-'''
-
-
-def inject_cycle_counter(ptx_source):
-    """Inject SM clock() instrumentation into PTX kernel."""
-    lines = ptx_source.split('\n')
-
-    # Find last .param line
-    last_param_idx = -1
-    for i, line in enumerate(lines):
-        stripped = line.strip()
-        if stripped.startswith('.param') and not stripped.startswith('//'):
-            last_param_idx = i
-    if last_param_idx < 0:
-        raise ValueError("No .param found")
-
-    # Add cycles pointer parameter
-    new_lines = []
-    for i, line in enumerate(lines):
-        if i == last_param_idx:
-            stripped = line.rstrip()
-            if not stripped.endswith(','):
-                new_lines.append(stripped + ',')
-            else:
-                new_lines.append(line)
-            new_lines.append('    .param .u64 ptr_cycles')
-        else:
-            new_lines.append(line)
-    lines = new_lines
-
-    # Find injection points
-    brace_idx = -1
-    last_reg_idx = -1
-    first_inst_idx = -1
-    ret_idx = -1
-
-    for i, line in enumerate(lines):
-        s = line.strip()
-        if brace_idx < 0 and '{' in s:
-            brace_idx = i
-        if brace_idx >= 0 and s.startswith('.reg '):
-            last_reg_idx = i
-
-    search_start = max(last_reg_idx + 1, brace_idx + 1)
-    for i in range(search_start, len(lines)):
-        s = lines[i].strip()
-        if not s or s.startswith('//') or s.startswith('.') or s.endswith(':') or s in ('{', '}'):
-            continue
-        first_inst_idx = i
-        break
-
-    for i in range(len(lines) - 1, -1, -1):
-        if lines[i].strip() in ('ret;', 'exit;'):
-            ret_idx = i
-            break
-
-    if brace_idx < 0 or first_inst_idx < 0 or ret_idx < 0:
-        raise ValueError("Could not find injection points")
-
-    # Insert clock registers
-    insert_at = last_reg_idx + 1 if last_reg_idx >= 0 else brace_idx + 1
-    clock_regs = [
-        "    .reg .b32 %rclock_start;",
-        "    .reg .b32 %rclock_end;",
-        "    .reg .b32 %rclock_delta;",
-        "    .reg .b64 %rd_cycles;",
-    ]
-    for j, r in enumerate(clock_regs):
-        lines.insert(insert_at + j, r)
-
-    offset = len(clock_regs)
-    first_inst_idx += offset
-    ret_idx += offset
-
-    # Insert clock start
-    clock_setup = [
-        "    ld.param.u64 %rd_cycles, [ptr_cycles];",
-        "    mov.u32 %rclock_start, %clock;",
-    ]
-    for j, s in enumerate(clock_setup):
-        lines.insert(first_inst_idx + j, s)
-    ret_idx += len(clock_setup)
-
-    # Insert clock end + store
-    clock_teardown = [
-        "    mov.u32 %rclock_end, %clock;",
-        "    sub.u32 %rclock_delta, %rclock_end, %rclock_start;",
-        "    st.global.u32 [%rd_cycles], %rclock_delta;",
-    ]
-    for j, t in enumerate(clock_teardown):
-        lines.insert(ret_idx + j, t)
-
-    return '\n'.join(lines)
-
-
-def measure_cycles(ptx_str, m, n, k, n_warmup=50, n_runs=200):
-    """Measure kernel cycles via persistent worker. Returns median cycles or None on error.
-
-    Uses fast_measure module which maintains a long-lived subprocess with CUDA context,
-    eliminating the ~3s CuPy import overhead per measurement.
-    """
-    try:
-        from .fast_measure import measure_cycles_fast
-        return measure_cycles_fast(ptx_str, m, n, k, n_warmup, n_runs)
-    except ImportError:
-        # Fallback to subprocess-per-call if fast_measure unavailable
-        pass
-
-    # Fallback implementation (slower, spawns subprocess per call)
-    spec = gemm_tile(m=m, n=n, k=k)
-
-    try:
-        timed_ptx = inject_cycle_counter(ptx_str)
-    except Exception:
-        return None
-
-    tmpdir = tempfile.mkdtemp(prefix="rlvr_")
-    ptx_path = os.path.join(tmpdir, "timed.ptx")
-    untimed_path = os.path.join(tmpdir, "untimed.ptx")
-
-    with open(ptx_path, "w") as f:
-        f.write(timed_ptx)
-    with open(untimed_path, "w") as f:
-        f.write(ptx_str)
-
-    script = _MEASURE_SCRIPT.format(
-        repo_root=REPO_ROOT,
-        ptx_path=ptx_path,
-        untimed_path=untimed_path,
-        kernel_name=spec.kernel_name,
-        m=m, n=n, k=k,
-        n_warmup=n_warmup,
-        n_runs=n_runs,
-    )
-
-    try:
-        proc = subprocess.run(
-            [sys.executable, "-c", script],
-            capture_output=True, text=True, timeout=120,
-            env=os.environ.copy(),
-        )
-        if proc.returncode != 0:
-            return None
-        stdout = proc.stdout.strip()
-        if not stdout:
-            return None
-        data = json.loads(stdout)
-        if "error" in data:
-            return None
-        return data["median"]
-    except Exception:
-        return None
-    finally:
-        shutil.rmtree(tmpdir, ignore_errors=True)
-
-
-# ---------------------------------------------------------------------------
 # Environment
 # ---------------------------------------------------------------------------
 
 class TransformEnv:
-    """MDP environment for transform selection on a single kernel."""
+    """MDP environment for transform selection on a single kernel.
+
+    Uses fast_measure (in-process CuPy) when use_hardware=True.
+    Caches baseline cycle counts across resets.
+    """
 
     def __init__(self, m, n, k, max_steps=6, use_hardware=True):
         self.m = m
@@ -365,6 +140,20 @@ class TransformEnv:
         self.max_steps = max_steps
         self.use_hardware = use_hardware
         self.kernel_id = f"gemm_tile({m},{n},{k})"
+        self._baseline_cached = None
+
+    def _measure(self, ptx_str):
+        """Measure cycles using in-process fast path."""
+        from .fast_measure import measure_cycles_fast
+        return measure_cycles_fast(ptx_str, self.m, self.n, self.k)
+
+    def _get_baseline(self):
+        """Get cached baseline cycles."""
+        if self._baseline_cached is not None:
+            return self._baseline_cached
+        from .fast_measure import get_baseline_cycles
+        self._baseline_cached = get_baseline_cycles(self.m, self.n, self.k)
+        return self._baseline_cached
 
     def reset(self):
         """Reset to baseline PTX. Returns (features_tensor, action_mask, action_history)."""
@@ -373,11 +162,9 @@ class TransformEnv:
         self.applied = set()
         self.step_count = 0
 
-        # Measure baseline
+        # Use cached baseline
         if self.use_hardware:
-            self.current_cycles = measure_cycles(
-                self.current_ptx, self.m, self.n, self.k
-            )
+            self.current_cycles = self._get_baseline()
         else:
             self.current_cycles = None
 
@@ -428,7 +215,6 @@ class TransformEnv:
             new_ptx, changed = apply_transform(self.current_ptx, action_label)
         except Exception as e:
             info["error"] = str(e)
-            # Return current state, penalty, done
             parsed = parse_kernel(self.current_ptx)
             features = extract_features(parsed)
             feat_array = features_to_array(features)
@@ -445,14 +231,20 @@ class TransformEnv:
             info["no_change"] = True
             reward = -STEP_COST
         elif self.use_hardware:
-            # Measure new cycle count
-            new_cycles = measure_cycles(new_ptx, self.m, self.n, self.k)
+            # Measure new cycle count (in-process, fast)
+            new_cycles = self._measure(new_ptx)
             if new_cycles is None:
                 info["measure_error"] = True
                 reward = -STEP_COST * 2
             else:
-                # Log-transformed reward
-                reward = math.log(self.current_cycles / new_cycles) - STEP_COST
+                # Log-transformed reward with noise floor
+                raw_log_ratio = math.log(self.current_cycles / new_cycles)
+                if abs(raw_log_ratio) < REWARD_FLOOR:
+                    # <1% change — treat as noise, not real signal
+                    reward = -STEP_COST
+                    info["below_floor"] = True
+                else:
+                    reward = raw_log_ratio - STEP_COST
                 info["cycles_before"] = self.current_cycles
                 info["cycles_after"] = new_cycles
                 self.current_cycles = new_cycles

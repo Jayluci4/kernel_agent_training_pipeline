@@ -2,16 +2,17 @@
 
 Usage:
     # BC warm-start only (CPU, no GPU needed)
-    python train_rlvr.py --bc-only
+    python scripts/train_rlvr.py --bc-only
 
-    # Full GRPO training (requires NVIDIA GPU + CUDA env)
-    python train_rlvr.py
+    # Full GRPO training (requires L4 GPU + CUDA env)
+    source ../../SAWO/experiments/chronos/setup_env.sh
+    python scripts/train_rlvr.py
 
     # Evaluate a saved checkpoint
-    python train_rlvr.py --eval --checkpoint results/rlvr/checkpoint_latest.pt
+    python scripts/train_rlvr.py --eval --checkpoint results/rlvr/checkpoint_latest.pt
 
     # Quick test (2 kernels, 5 epochs)
-    python train_rlvr.py --quick
+    python scripts/train_rlvr.py --quick
 """
 
 import argparse
@@ -20,11 +21,13 @@ import logging
 import os
 import sys
 
-REPO_ROOT = os.path.abspath(os.path.dirname(__file__))
-sys.path.insert(0, REPO_ROOT)
+SAWO_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "SAWO")
+)
+sys.path.insert(0, SAWO_ROOT)
 
 import torch
-from pipeline.rl.grpo import GRPOTrainer
+from experiments.chronos.rl.grpo import GRPOTrainer
 
 # All 64 gemm_tile kernels from greedy v2
 ALL_KERNELS = [
@@ -58,13 +61,18 @@ def main():
     # Data paths
     parser.add_argument(
         "--trajectories",
-        default=os.path.join(os.path.dirname(__file__), "data", "trajectories_v2.jsonl"),
+        default=os.path.join(os.path.dirname(__file__), "..", "data", "trajectories_v2.jsonl"),
         help="Path to BC trajectory JSONL",
     )
     parser.add_argument(
         "--save-dir",
-        default=os.path.join(os.path.dirname(__file__), "results", "rlvr"),
+        default=os.path.join(os.path.dirname(__file__), "..", "results", "rlvr"),
         help="Directory for checkpoints and logs",
+    )
+    parser.add_argument(
+        "--greedy-results",
+        default=os.path.join(os.path.dirname(__file__), "..", "data", "greedy_search_v2_results.json"),
+        help="Path to greedy v2 results for novel sequence detection",
     )
 
     # Training modes
@@ -94,6 +102,7 @@ def main():
     # Resolve paths
     args.trajectories = os.path.abspath(args.trajectories)
     args.save_dir = os.path.abspath(args.save_dir)
+    args.greedy_results = os.path.abspath(args.greedy_results)
 
     setup_logging(args.save_dir)
 
@@ -169,12 +178,14 @@ def main():
         return
 
     # Full training
+    greedy_path = args.greedy_results if os.path.exists(args.greedy_results) else None
     result = trainer.train(
         trajectory_path=args.trajectories,
         n_bc_epochs=args.bc_epochs,
         n_grpo_epochs=args.grpo_epochs,
         eval_every=args.eval_every,
         save_dir=args.save_dir,
+        greedy_results_path=greedy_path,
     )
 
     # Save final results

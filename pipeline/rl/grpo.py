@@ -109,6 +109,8 @@ class GRPOTrainer:
         max_steps=6,
         epsilon=0.2,
         beta=0.01,
+        entropy_coef=0.02,
+        n_updates=3,
         use_hardware=True,
         device="cpu",
     ):
@@ -118,6 +120,8 @@ class GRPOTrainer:
         self.max_steps = max_steps
         self.epsilon = epsilon
         self.beta = beta
+        self.entropy_coef = entropy_coef
+        self.n_updates = n_updates
         self.use_hardware = use_hardware
         self.device = device
 
@@ -208,18 +212,30 @@ class GRPOTrainer:
 
     # ---- GRPO rollouts ----
 
-    def generate_rollout(self, env, temperature=1.0):
-        """Generate one episode. Returns list of step dicts."""
+    def generate_rollout(self, env, temperature=1.0, min_steps=0):
+        """Generate one episode. Returns list of step dicts.
+
+        min_steps: mask out "stop" action for the first N steps,
+                   forcing the agent to try transforms before stopping.
+        """
         self.policy.eval()
         state = env.reset()
         features, mask, history = state
 
         trajectory = []
-        for _ in range(self.max_steps):
+        for step_i in range(self.max_steps):
+            # Mask stop for first min_steps to force exploration
+            rollout_mask = mask.clone()
+            if step_i < min_steps:
+                rollout_mask[ACTION_TO_ID["stop"]] = 0.0
+                # If only stop was available, skip (shouldn't happen early)
+                if rollout_mask.sum() == 0:
+                    rollout_mask = mask.clone()
+
             with torch.no_grad():
                 action_id, log_prob = self.policy.get_action(
                     features.to(self.device),
-                    mask.to(self.device),
+                    rollout_mask.to(self.device),
                     history.to(self.device),
                     temperature=temperature,
                 )
@@ -241,13 +257,15 @@ class GRPOTrainer:
 
         return trajectory
 
-    def collect_rollouts(self, kernel_batch, temperature=1.0):
+    def collect_rollouts(self, kernel_batch, temperature=1.0, min_steps=0):
         """Collect G rollouts per kernel. Returns dict[kernel -> list of trajectories]."""
         rollouts = defaultdict(list)
         for m, n, k in kernel_batch:
             env = self.envs[(m, n, k)]
             for _ in range(self.group_size):
-                traj = self.generate_rollout(env, temperature=temperature)
+                traj = self.generate_rollout(
+                    env, temperature=temperature, min_steps=min_steps,
+                )
                 rollouts[(m, n, k)].append(traj)
         return rollouts
 
@@ -303,6 +321,7 @@ class GRPOTrainer:
         total_loss = 0.0
         total_policy_loss = 0.0
         total_kl_loss = 0.0
+        total_entropy = 0.0
         n_batches = 0
 
         for start in range(0, len(advantages), self.batch_size):
@@ -327,20 +346,33 @@ class GRPOTrainer:
             # Importance ratio
             ratio = torch.exp(new_lps - old_lps)
 
-            # Clipped surrogate
+            # Asymmetric clipped surrogate (DAPO-style)
+            # Wider clip for positive advantages: let good actions update more
             surr1 = ratio * advs
-            surr2 = torch.clamp(ratio, 1 - self.epsilon, 1 + self.epsilon) * advs
+            clip_high = 1 + self.epsilon * 1.5  # 0.3 for positive
+            clip_low = 1 - self.epsilon          # 0.2 for negative
+            surr2 = torch.clamp(ratio, clip_low, clip_high) * advs
             policy_loss = -torch.min(surr1, surr2).mean()
 
-            # KL penalty against reference
+            # Entropy bonus to prevent mode collapse (6.2)
+            logits = self.policy(features, masks, histories)
+            probs = F.softmax(logits, dim=-1)
+            log_probs_all = F.log_softmax(logits, dim=-1)
+            entropy = -(probs * log_probs_all).sum(dim=-1).mean()
+            entropy_loss = -self.entropy_coef * entropy
+
+            # KL penalty against reference (DeepSeek-R1 unbiased estimator)
+            # D_KL = e^(log_ref - log_new) - (log_ref - log_new) - 1
+            # Always non-negative, zero when policies match
             with torch.no_grad():
                 ref_lps = self.ref_policy.log_probs(
                     features, masks, histories, actions
                 )
-            kl = (ref_lps - new_lps).mean()
-            kl_loss = self.beta * kl
+            log_ratio = ref_lps - new_lps
+            per_sample_kl = torch.exp(log_ratio) - log_ratio - 1
+            kl_loss = self.beta * per_sample_kl.mean()
 
-            loss = policy_loss + kl_loss
+            loss = policy_loss + kl_loss + entropy_loss
 
             self.optimizer.zero_grad()
             loss.backward()
@@ -350,6 +382,7 @@ class GRPOTrainer:
             total_loss += loss.item()
             total_policy_loss += policy_loss.item()
             total_kl_loss += kl_loss.item()
+            total_entropy += entropy.item()
             n_batches += 1
 
         denom = max(n_batches, 1)
@@ -357,18 +390,26 @@ class GRPOTrainer:
             "loss": total_loss / denom,
             "policy_loss": total_policy_loss / denom,
             "kl_loss": total_kl_loss / denom,
+            "entropy": total_entropy / denom,
             "n_steps": len(advantages),
         }
 
     # ---- Evaluation ----
 
-    def evaluate(self):
-        """Greedy evaluation on all kernels. Returns results dict."""
+    def evaluate(self, kernel_subset=None):
+        """Greedy evaluation on kernels. Returns results dict.
+
+        kernel_subset: optional list of (m,n,k) to evaluate on.
+                       Defaults to all kernels.
+        """
         self.policy.eval()
+        kernels_to_eval = kernel_subset if kernel_subset else self.kernels
         improvements = []
         per_kernel = {}
+        action_counts = defaultdict(int)
+        unique_sequences = set()
 
-        for m, n, k in self.kernels:
+        for m, n, k in kernels_to_eval:
             env = self.envs[(m, n, k)]
             state = env.reset()
             features, mask, history = state
@@ -386,7 +427,9 @@ class GRPOTrainer:
                     )
 
                 next_state, reward, done, info = env.step(action_id)
-                actions_taken.append(ACTION_NAMES[action_id])
+                action_label = ACTION_NAMES[action_id]
+                actions_taken.append(action_label)
+                action_counts[action_label] += 1
 
                 if done:
                     break
@@ -398,6 +441,8 @@ class GRPOTrainer:
                 imp = 0.0
 
             improvements.append(imp)
+            sequence_key = tuple(actions_taken)
+            unique_sequences.add(sequence_key)
             per_kernel[f"gemm_tile({m},{n},{k})"] = {
                 "improvement": round(imp, 4),
                 "actions": actions_taken,
@@ -406,11 +451,95 @@ class GRPOTrainer:
             }
 
         mean_imp = float(np.mean(improvements)) if improvements else 0.0
+
+        # Mode collapse detection (6.2): log action distribution + unique sequences
+        total_actions = sum(action_counts.values()) or 1
+        action_dist = {
+            k: round(v / total_actions, 3)
+            for k, v in sorted(action_counts.items(), key=lambda x: -x[1])
+        }
+
         return {
             "mean_improvement": mean_imp,
             "n_kernels": len(improvements),
             "per_kernel": per_kernel,
+            "action_distribution": action_dist,
+            "unique_sequences": len(unique_sequences),
         }
+
+    def evaluate_loko(self, n_folds=8):
+        """Leave-One-Kernel-Out generalization check (6.4).
+
+        Splits kernels into n_folds groups. For each fold, evaluates
+        on kernels NOT in the training batch to detect overfitting.
+        Returns mean improvement on held-out kernels.
+        """
+        self.policy.eval()
+        kernel_list = list(self.kernels)
+        if len(kernel_list) <= n_folds:
+            # Too few kernels for meaningful LOKO
+            return None
+
+        random.shuffle(kernel_list)
+        fold_size = len(kernel_list) // n_folds
+        holdout_improvements = []
+
+        for fold_i in range(n_folds):
+            start = fold_i * fold_size
+            end = start + fold_size
+            holdout = kernel_list[start:end]
+
+            result = self.evaluate(kernel_subset=holdout)
+            holdout_improvements.append(result["mean_improvement"])
+
+        mean_holdout = float(np.mean(holdout_improvements))
+        return mean_holdout
+
+    def load_greedy_baseline(self, greedy_results_path):
+        """Load greedy v2 results for novel sequence comparison.
+
+        Stores {kernel_name: (sequence_tuple, improvement)} for each kernel.
+        """
+        with open(greedy_results_path) as f:
+            data = json.load(f)
+        self._greedy_baseline = {}
+        for r in data["results"]:
+            kernel = r["kernel"]
+            seq = tuple(r["transforms_applied"])
+            # Parse improvement string like "-28.1%" to float
+            imp_str = r["total_improvement"].replace("%", "").replace("+", "")
+            imp = float(imp_str) / 100.0
+            self._greedy_baseline[kernel] = (seq, imp)
+        logger.info("Loaded greedy v2 baseline: %d kernels", len(self._greedy_baseline))
+
+    def detect_novel_sequences(self, eval_result):
+        """Compare eval sequences against greedy v2. Returns novel discoveries.
+
+        A novel sequence: different from greedy AND achieves better improvement.
+        """
+        if not hasattr(self, '_greedy_baseline'):
+            return []
+
+        novel = []
+        for kernel_name, result in eval_result["per_kernel"].items():
+            if kernel_name not in self._greedy_baseline:
+                continue
+            greedy_seq, greedy_imp = self._greedy_baseline[kernel_name]
+            policy_seq = tuple(
+                a for a in result["actions"] if a != "stop"
+            )
+            policy_imp = result["improvement"]
+
+            # Novel = different sequence AND better or equal improvement
+            if policy_seq != greedy_seq and policy_imp <= greedy_imp:
+                novel.append({
+                    "kernel": kernel_name,
+                    "policy_seq": list(policy_seq),
+                    "greedy_seq": list(greedy_seq),
+                    "policy_imp": policy_imp,
+                    "greedy_imp": greedy_imp,
+                })
+        return novel
 
     # ---- Full training ----
 
@@ -421,17 +550,23 @@ class GRPOTrainer:
         n_grpo_epochs=450,
         eval_every=50,
         save_dir=None,
+        greedy_results_path=None,
     ):
         """Full pipeline: BC warm-start followed by GRPO.
 
         Returns final evaluation result (or stats if use_hardware=False).
         """
+        # Load greedy v2 baseline for novel sequence detection
+        if greedy_results_path:
+            self.load_greedy_baseline(greedy_results_path)
+
         # Phase 1: BC warm-start
         logger.info("=" * 60)
         logger.info("Phase 1: BC Warm-start (%d epochs)", n_bc_epochs)
         logger.info("=" * 60)
         bc_acc = self.bc_warmstart(trajectory_path, n_epochs=n_bc_epochs)
 
+        best_improvement = float('inf')  # lower is better (negative = speedup)
         if self.use_hardware:
             eval_result = self.evaluate()
             logger.info(
@@ -439,6 +574,7 @@ class GRPOTrainer:
                 eval_result["mean_improvement"] * 100,
             )
             self.stats["eval_improvement"].append(eval_result["mean_improvement"])
+            best_improvement = eval_result["mean_improvement"]
 
         # Phase 2: GRPO
         logger.info("=" * 60)
@@ -449,7 +585,10 @@ class GRPOTrainer:
             global_epoch = n_bc_epochs + epoch
 
             # Temperature schedule: exploration then exploitation
-            temperature = 1.5 if epoch < 150 else 0.5
+            exploring = epoch < 150
+            temperature = 1.5 if exploring else 0.5
+            # Force at least 2 transforms during exploration to prevent stop-collapse
+            min_steps = 2 if exploring else 0
 
             # Sample kernel batch
             if len(self.kernels) <= self.batch_size:
@@ -458,7 +597,9 @@ class GRPOTrainer:
                 kernel_batch = random.sample(self.kernels, self.batch_size)
 
             # Collect rollouts
-            rollouts = self.collect_rollouts(kernel_batch, temperature=temperature)
+            rollouts = self.collect_rollouts(
+                kernel_batch, temperature=temperature, min_steps=min_steps,
+            )
 
             # Compute advantages
             advantages = self.compute_advantages(rollouts)
@@ -466,8 +607,10 @@ class GRPOTrainer:
                 logger.warning("Epoch %d: empty advantages, skipping", global_epoch)
                 continue
 
-            # Policy gradient update
-            update = self.grpo_update(advantages)
+            # Multiple gradient updates per rollout batch (PPO-style)
+            # Rollout collection is expensive (~40s), gradient step is cheap (~0.01s)
+            for _ in range(self.n_updates):
+                update = self.grpo_update(advantages)
             self.stats["grpo_loss"].append(update["loss"])
             self.stats["grpo_policy_loss"].append(update["policy_loss"])
             self.stats["grpo_kl_loss"].append(update["kl_loss"])
@@ -475,17 +618,22 @@ class GRPOTrainer:
             # Log every 10 epochs
             if (epoch + 1) % 10 == 0:
                 all_rewards = []
+                all_lengths = []
                 for trajs in rollouts.values():
                     for traj in trajs:
                         all_rewards.append(sum(s["reward"] for s in traj))
+                        all_lengths.append(len(traj))
                 mean_r = np.mean(all_rewards) if all_rewards else 0
+                mean_len = np.mean(all_lengths) if all_lengths else 0
 
                 logger.info(
-                    "GRPO %d (global %d): loss=%.4f (pol=%.4f kl=%.4f) "
-                    "reward=%.4f T=%.1f steps=%d",
+                    "GRPO %d (global %d): loss=%.4f (pol=%.4f kl=%.4f ent=%.3f) "
+                    "reward=%.4f T=%.1f steps=%d len=%.1f min_s=%d",
                     epoch + 1, global_epoch + 1,
                     update["loss"], update["policy_loss"], update["kl_loss"],
+                    update["entropy"],
                     mean_r, temperature, update["n_steps"],
+                    mean_len, min_steps,
                 )
 
             # Periodic evaluation
@@ -493,11 +641,60 @@ class GRPOTrainer:
                 eval_result = self.evaluate()
                 self.stats["eval_improvement"].append(eval_result["mean_improvement"])
                 logger.info(
-                    "Eval at epoch %d: mean improvement = %.1f%% (%d kernels)",
+                    "Eval at epoch %d: mean improvement = %.1f%% (%d kernels, "
+                    "%d unique sequences)",
                     global_epoch + 1,
                     eval_result["mean_improvement"] * 100,
                     eval_result["n_kernels"],
+                    eval_result["unique_sequences"],
                 )
+                # Mode collapse check (6.2)
+                top_actions = list(eval_result["action_distribution"].items())[:5]
+                logger.info(
+                    "  Action distribution (top 5): %s",
+                    ", ".join(f"{k}={v:.1%}" for k, v in top_actions),
+                )
+                # LOKO generalization check (6.4) — every 2nd eval
+                if (epoch + 1) % (eval_every * 2) == 0:
+                    loko_imp = self.evaluate_loko()
+                    if loko_imp is not None:
+                        self.stats["loko_improvement"].append(loko_imp)
+                        gap = eval_result["mean_improvement"] - loko_imp
+                        logger.info(
+                            "  LOKO: holdout improvement = %.1f%% (gap = %.1f%%)",
+                            loko_imp * 100, gap * 100,
+                        )
+
+                # Novel sequence detection (Section 7 success criterion)
+                novel = self.detect_novel_sequences(eval_result)
+                if novel:
+                    self.stats["novel_count"].append(len(novel))
+                    logger.info(
+                        "  Novel sequences: %d (better than greedy with different actions)",
+                        len(novel),
+                    )
+                    for n in novel[:3]:  # log top 3
+                        logger.info(
+                            "    %s: policy=%s (%.1f%%) vs greedy=%s (%.1f%%)",
+                            n["kernel"],
+                            n["policy_seq"], n["policy_imp"] * 100,
+                            n["greedy_seq"], n["greedy_imp"] * 100,
+                        )
+                else:
+                    self.stats["novel_count"].append(0)
+
+                # Best checkpoint tracking
+                if eval_result["mean_improvement"] < best_improvement:
+                    best_improvement = eval_result["mean_improvement"]
+                    logger.info(
+                        "  New best: %.1f%%", best_improvement * 100,
+                    )
+                    if save_dir:
+                        self._save_checkpoint(
+                            save_dir, global_epoch + 1, eval_result,
+                            tag="best",
+                        )
+
                 if save_dir:
                     self._save_checkpoint(save_dir, global_epoch + 1, eval_result)
 
@@ -517,7 +714,7 @@ class GRPOTrainer:
 
     # ---- Checkpointing ----
 
-    def _save_checkpoint(self, save_dir, epoch, eval_result=None):
+    def _save_checkpoint(self, save_dir, epoch, eval_result=None, tag=None):
         import os
 
         os.makedirs(save_dir, exist_ok=True)
@@ -536,7 +733,12 @@ class GRPOTrainer:
 
         latest = os.path.join(save_dir, "checkpoint_latest.pt")
         torch.save(ckpt, latest)
-        logger.info("Saved checkpoint: %s", path)
+
+        if tag:
+            tagged = os.path.join(save_dir, f"checkpoint_{tag}.pt")
+            torch.save(ckpt, tagged)
+
+        logger.info("Saved checkpoint: %s%s", path, f" [{tag}]" if tag else "")
 
     def load_checkpoint(self, path):
         ckpt = torch.load(path, map_location=self.device, weights_only=False)
