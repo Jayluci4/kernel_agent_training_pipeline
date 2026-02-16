@@ -24,7 +24,7 @@ import numpy as np
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, REPO_ROOT)
 
-from experiments.chronos.features.kernel_features import FEATURE_NAMES
+from pipeline.features.kernel_features import FEATURE_NAMES
 
 DATA_DIR = os.path.join(REPO_ROOT, "data")
 

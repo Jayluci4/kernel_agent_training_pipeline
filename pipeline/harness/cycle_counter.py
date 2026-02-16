@@ -14,7 +14,7 @@ This is the ground truth for pipeline model calibration:
   - If clock() shows no difference, the scheduling axis is invalid for this kernel
 
 Usage:
-    from experiments.chronos.harness.cycle_counter import measure_schedule_cycles
+    from pipeline.harness.cycle_counter import measure_schedule_cycles
     cycles = measure_schedule_cycles(instructions, schedule_order)
 """
 

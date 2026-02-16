@@ -21,26 +21,26 @@ import numpy as np
 import torch
 
 REPO_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "..", "..")
+    os.path.join(os.path.dirname(__file__), "..", "..")
 )
 sys.path.insert(0, REPO_ROOT)
 
-from experiments.chronos.harness.ptx_templates import gemm_tile
-from experiments.chronos.transform.parsed_kernel import (
+from pipeline.harness.ptx_templates import gemm_tile
+from pipeline.transform.parsed_kernel import (
     parse_kernel, emit, deep_copy_kernel, BodyLine,
 )
-from experiments.chronos.transform.base import TransformResult
-from experiments.chronos.transform.register_budget import RegisterBudgetTransform
-from experiments.chronos.transform.cache_hints import (
+from pipeline.transform.base import TransformResult
+from pipeline.transform.register_budget import RegisterBudgetTransform
+from pipeline.transform.cache_hints import (
     CacheHintTransform, _find_unhinted_loads, _LD_GLOBAL_PATTERN,
 )
-from experiments.chronos.transform.vectorize_loads import VectorizeLoadsTransform
-from experiments.chronos.transform.vectorize_stores import VectorizeStoresTransform
-from experiments.chronos.transform.prefetch import PrefetchTransform
-from experiments.chronos.transform.store_cache_hints import StoreCacheHintTransform
-from experiments.chronos.transform.split_vectors import SplitVectorLoadsTransform
-from experiments.chronos.transform.reorder import ReorderTransform
-from experiments.chronos.features.kernel_features import (
+from pipeline.transform.vectorize_loads import VectorizeLoadsTransform
+from pipeline.transform.vectorize_stores import VectorizeStoresTransform
+from pipeline.transform.prefetch import PrefetchTransform
+from pipeline.transform.store_cache_hints import StoreCacheHintTransform
+from pipeline.transform.split_vectors import SplitVectorLoadsTransform
+from pipeline.transform.reorder import ReorderTransform
+from pipeline.features.kernel_features import (
     extract_features, features_to_array,
 )
 
@@ -138,8 +138,8 @@ import numpy as np
 
 try:
     import cupy as cp
-    from experiments.chronos.harness.ptx_compiler import compile_ptx, load_kernel
-    from experiments.chronos.harness.ptx_templates import gemm_tile
+    from pipeline.harness.ptx_compiler import compile_ptx, load_kernel
+    from pipeline.harness.ptx_templates import gemm_tile
 
     with open({ptx_path!r}) as f:
         ptx = f.read()

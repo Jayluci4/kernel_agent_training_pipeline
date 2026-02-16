@@ -13,7 +13,7 @@ Also trains step-by-step policy imitation on the top-K schedules.
 The policy uses Q · H^T dot-product to select next instruction.
 
 Usage:
-    python -m experiments.chronos.training.train_bc_crossattn
+    python -m pipeline.training.train_bc_crossattn
 """
 
 import os
@@ -27,13 +27,13 @@ import torch.optim as optim
 from scipy.stats import spearmanr
 from typing import Dict, List, Tuple
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from experiments.chronos.model.representation import RepresentationNetwork, LatentState
-from experiments.chronos.model.prediction import PredictionNetwork
-from experiments.chronos.env.schedule_env import ScheduleEnv
-from experiments.chronos.env.instruction import Instruction, parse_ptx_body
-from experiments.chronos.harness.ptx_templates import gemm_tile
+from pipeline.model.representation import RepresentationNetwork, LatentState
+from pipeline.model.prediction import PredictionNetwork
+from pipeline.env.schedule_env import ScheduleEnv
+from pipeline.env.instruction import Instruction, parse_ptx_body
+from pipeline.harness.ptx_templates import gemm_tile
 
 
 def load_dataset(path: str) -> Dict:

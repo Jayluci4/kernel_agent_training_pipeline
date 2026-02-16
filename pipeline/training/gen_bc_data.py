@@ -17,8 +17,7 @@ Each schedule is:
 Output: bc_dataset.pkl
 
 Usage:
-    source experiments/chronos/setup_env.sh
-    python -m experiments.chronos.training.gen_bc_data
+    python -m pipeline.training.gen_bc_data
 """
 
 import os
@@ -28,19 +27,19 @@ import pickle
 import numpy as np
 from typing import Dict, List, Tuple
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from experiments.chronos.env.instruction import Instruction, parse_ptx_body
-from experiments.chronos.env.dag import InstructionDAG
-from experiments.chronos.env.schedule_env import (
+from pipeline.env.instruction import Instruction, parse_ptx_body
+from pipeline.env.dag import InstructionDAG
+from pipeline.env.schedule_env import (
     ScheduleEnv, random_rollout, critical_path_heuristic,
     interleave_heuristic, program_order_schedule,
 )
-from experiments.chronos.env.pipeline_model import L4PipelineModel
-from experiments.chronos.search.mcts import MCTS, MCTSConfig
-from experiments.chronos.harness.ptx_templates import gemm_tile, TEMPLATES
-from experiments.chronos.harness.cycle_counter import measure_schedule_cycles
-from experiments.chronos.harness.validate_model import _extract_reg_declarations
+from pipeline.env.pipeline_model import L4PipelineModel
+from pipeline.search.mcts import MCTS, MCTSConfig
+from pipeline.harness.ptx_templates import gemm_tile, TEMPLATES
+from pipeline.harness.cycle_counter import measure_schedule_cycles
+from pipeline.harness.validate_model import _extract_reg_declarations
 
 
 def generate_random_schedule_fast(dag: InstructionDAG,
