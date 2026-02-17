@@ -249,12 +249,21 @@ class GRPOTrainer:
                     rollout_mask = mask.clone()
 
             with torch.no_grad():
-                action_id, log_prob = self.policy.get_action(
+                action_id, _ = self.policy.get_action(
                     features.to(self.device),
                     rollout_mask.to(self.device),
                     history.to(self.device),
                     temperature=temperature,
                 )
+                # Compute log_prob at temp=1.0 to match grpo_update's log_probs()
+                # (sampling uses temperature for exploration, but importance ratio
+                # must compare log_probs at the SAME temperature)
+                log_prob = self.policy.log_probs(
+                    features.unsqueeze(0).to(self.device),
+                    mask.unsqueeze(0).to(self.device),
+                    history.unsqueeze(0).to(self.device),
+                    torch.tensor([action_id]),
+                ).item()
 
             next_state, reward, done, info = env.step(action_id)
 
@@ -371,15 +380,14 @@ class GRPOTrainer:
             policy_loss = -torch.min(surr1, surr2).mean()
 
             # Entropy bonus to prevent mode collapse (6.2)
-            # Compute entropy only over valid (unmasked) actions
+            # Replace -inf with -1e4 (not -inf) so that:
+            #   softmax gives ~0 prob to masked actions (exp(-1e4) ≈ 0)
+            #   but gradients are finite (no 0 * -inf = NaN in backward)
             logits_ent = self.policy(features, masks, histories)
-            # Clamp finite logits to match policy's distribution
-            finite = logits_ent.isfinite()
-            logits_ent = torch.where(finite, logits_ent.clamp(-50, 50), logits_ent)
-            probs = F.softmax(logits_ent, dim=-1)
-            log_probs_all = F.log_softmax(logits_ent, dim=-1)
-            # nan_to_num: masked actions have prob=0, log=-inf → 0*-inf=NaN → replace with 0
-            entropy = -(probs * log_probs_all).nan_to_num(0).sum(dim=-1).mean()
+            logits_ent = logits_ent.clamp(min=-1e4, max=50)
+            probs_ent = F.softmax(logits_ent, dim=-1)
+            log_probs_ent = F.log_softmax(logits_ent, dim=-1)
+            entropy = -(probs_ent * log_probs_ent).sum(dim=-1).mean()
             entropy_loss = -self.entropy_coef * entropy
 
             # KL penalty against reference (DeepSeek-R1 unbiased estimator)
