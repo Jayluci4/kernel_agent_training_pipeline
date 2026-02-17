@@ -2,16 +2,17 @@
 
 Usage:
     # BC warm-start only (CPU, no GPU needed)
-    python train_rlvr.py --bc-only
+    python scripts/train_rlvr.py --bc-only
 
-    # Full GRPO training (requires NVIDIA GPU)
-    python train_rlvr.py
+    # Full GRPO training (requires L4 GPU + CUDA env)
+    source ../../SAWO/experiments/chronos/setup_env.sh
+    python scripts/train_rlvr.py
 
     # Evaluate a saved checkpoint
-    python train_rlvr.py --eval --checkpoint results/rlvr/checkpoint_latest.pt
+    python scripts/train_rlvr.py --eval --checkpoint results/rlvr/checkpoint_latest.pt
 
     # Quick test (2 kernels, 5 epochs)
-    python train_rlvr.py --quick
+    python scripts/train_rlvr.py --quick
 """
 
 import argparse
@@ -20,12 +21,13 @@ import logging
 import os
 import sys
 
-# Script is at repo root, so REPO_ROOT is current directory
-REPO_ROOT = os.path.abspath(os.path.dirname(__file__))
-sys.path.insert(0, REPO_ROOT)
+SAWO_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "SAWO")
+)
+sys.path.insert(0, SAWO_ROOT)
 
 import torch
-from pipeline.rl.grpo import GRPOTrainer
+from experiments.chronos.rl.grpo import GRPOTrainer
 
 # All 64 gemm_tile kernels from greedy v2
 ALL_KERNELS = [
@@ -59,17 +61,17 @@ def main():
     # Data paths
     parser.add_argument(
         "--trajectories",
-        default=os.path.join(os.path.dirname(__file__), "data", "trajectories_v2.jsonl"),
+        default=os.path.join(os.path.dirname(__file__), "..", "data", "trajectories_v2.jsonl"),
         help="Path to BC trajectory JSONL",
     )
     parser.add_argument(
         "--save-dir",
-        default=os.path.join(os.path.dirname(__file__), "results", "rlvr"),
+        default=os.path.join(os.path.dirname(__file__), "..", "results", "rlvr"),
         help="Directory for checkpoints and logs",
     )
     parser.add_argument(
         "--greedy-results",
-        default=os.path.join(os.path.dirname(__file__), "data", "greedy_search_v2_results.json"),
+        default=os.path.join(os.path.dirname(__file__), "..", "data", "greedy_search_v2_results.json"),
         help="Path to greedy v2 results for novel sequence detection",
     )
 
@@ -118,7 +120,7 @@ def main():
         logger.info("Full mode: %d kernels", len(kernels))
 
     use_hardware = not args.no_hardware
-    device = "cpu"  # MLP is tiny, CPU is fine
+    device = "cuda" if torch.cuda.is_available() else "cpu"
 
     logger.info("Configuration:")
     logger.info("  kernels: %d", len(kernels))
