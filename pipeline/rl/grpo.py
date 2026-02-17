@@ -1,10 +1,15 @@
-"""GRPO trainer for PTX transform selection.
+"""DA-GRPO trainer for PTX transform selection.
 
-Implements:
+Demonstration-Anchored GRPO with Forced Set Diversity:
 1. BC warm-start from stored trajectory JSONL
-2. GRPO rollout generation with hardware-in-the-loop measurement
-3. MC-GRPO advantage computation (median baseline, global normalization)
-4. Clipped surrogate loss with KL penalty against reference policy
+2. Outcome-only reward: terminal R = log(baseline/final), zero per-step
+3. Anchor rollout: 1 greedy rollout from ref (BC) policy per group
+4. Forced diverse exploration: each rollout starts with a different
+   forced first action, guaranteeing different transform SETS in the group.
+   Without this, the near-deterministic policy produces identical rollouts,
+   advantage collapses to zero, and no gradient flows.
+5. MC-GRPO advantage computation (median baseline, global normalization)
+6. Adaptive entropy: higher entropy coefficient when entropy drops low
 """
 
 import copy
@@ -102,7 +107,7 @@ class GRPOTrainer:
         self,
         kernels,
         hidden=128,
-        lr=3e-4,
+        lr=1e-4,
         bc_lr=1e-3,
         group_size=8,
         batch_size=32,
@@ -144,6 +149,7 @@ class GRPOTrainer:
 
         # Training stats
         self.stats = defaultdict(list)
+
 
     # ---- BC warm-start ----
 
@@ -262,7 +268,7 @@ class GRPOTrainer:
                     features.unsqueeze(0).to(self.device),
                     mask.unsqueeze(0).to(self.device),
                     history.unsqueeze(0).to(self.device),
-                    torch.tensor([action_id]),
+                    torch.tensor([action_id], device=self.device),
                 ).item()
 
             next_state, reward, done, info = env.step(action_id)
@@ -280,16 +286,162 @@ class GRPOTrainer:
                 break
             features, mask, history = next_state
 
+        # Outcome-only: add terminal reward to last step
+        terminal_r = env.terminal_reward()
+        if trajectory:
+            trajectory[-1]["reward"] += terminal_r
+
+        return trajectory
+
+    def generate_anchor_rollout(self, env):
+        """Greedy rollout from reference (BC) policy.
+
+        Provides a guaranteed-quality trajectory in each group.
+        Actions chosen by ref_policy (greedy), but log_probs computed
+        from current policy (for importance ratios in GRPO update).
+        """
+        self.ref_policy.eval()
+        self.policy.eval()
+        state = env.reset()
+        features, mask, history = state
+
+        trajectory = []
+        for step_i in range(self.max_steps):
+            with torch.no_grad():
+                # Action from ref_policy (greedy, deterministic)
+                action_id = self.ref_policy.get_greedy_action(
+                    features.to(self.device),
+                    mask.to(self.device),
+                    history.to(self.device),
+                )
+                # Log prob from CURRENT policy (for importance ratio)
+                log_prob = self.policy.log_probs(
+                    features.unsqueeze(0).to(self.device),
+                    mask.unsqueeze(0).to(self.device),
+                    history.unsqueeze(0).to(self.device),
+                    torch.tensor([action_id], device=self.device),
+                ).item()
+
+            next_state, reward, done, info = env.step(action_id)
+
+            trajectory.append({
+                "features": features.clone(),
+                "mask": mask.clone(),
+                "history": history.clone(),
+                "action": action_id,
+                "reward": reward,  # 0.0 per-step (outcome-only)
+                "log_prob": log_prob,
+            })
+
+            if done:
+                break
+            features, mask, history = next_state
+
+        # Terminal reward from hardware measurement
+        terminal_r = env.terminal_reward()
+        if trajectory:
+            trajectory[-1]["reward"] += terminal_r
+
+        return trajectory
+
+    def generate_forced_rollout(self, env, forced_action, temperature=1.0):
+        """Rollout with a forced first action, then policy takes over.
+
+        Forces a specific first transform to guarantee diverse transform
+        SETS across the group. Without this, a near-deterministic policy
+        produces identical sets in all rollouts → zero advantage → no gradient.
+        """
+        self.policy.eval()
+        state = env.reset()
+        features, mask, history = state
+
+        trajectory = []
+        for step_i in range(self.max_steps):
+            rollout_mask = mask.clone()
+            # Mask stop for step 0 (forced action) and step 1 (force at least 2 transforms)
+            if step_i < 2:
+                rollout_mask[ACTION_TO_ID["stop"]] = 0.0
+                if rollout_mask.sum() == 0:
+                    rollout_mask = mask.clone()
+
+            if step_i == 0:
+                # Forced first action
+                action_id = forced_action
+            else:
+                with torch.no_grad():
+                    action_id, _ = self.policy.get_action(
+                        features.to(self.device),
+                        rollout_mask.to(self.device),
+                        history.to(self.device),
+                        temperature=temperature,
+                    )
+
+            # Log prob from current policy (for importance ratio)
+            with torch.no_grad():
+                log_prob = self.policy.log_probs(
+                    features.unsqueeze(0).to(self.device),
+                    mask.unsqueeze(0).to(self.device),
+                    history.unsqueeze(0).to(self.device),
+                    torch.tensor([action_id], device=self.device),
+                ).item()
+
+            next_state, reward, done, info = env.step(action_id)
+
+            trajectory.append({
+                "features": features.clone(),
+                "mask": mask.clone(),
+                "history": history.clone(),
+                "action": action_id,
+                "reward": reward,
+                "log_prob": log_prob,
+            })
+
+            if done:
+                break
+            features, mask, history = next_state
+
+        terminal_r = env.terminal_reward()
+        if trajectory:
+            trajectory[-1]["reward"] += terminal_r
+
         return trajectory
 
     def collect_rollouts(self, kernel_batch, temperature=1.0, min_steps=0):
-        """Collect G rollouts per kernel. Returns dict[kernel -> list of trajectories]."""
+        """Collect rollouts per kernel: 1 anchor + diverse exploration.
+
+        Forced Set Diversity: each exploration rollout starts with a
+        different forced first action, guaranteeing different transform
+        SETS across the group. This creates reward variance where a
+        near-deterministic policy would otherwise produce identical
+        rollouts with zero advantage.
+        """
         rollouts = defaultdict(list)
         for m, n, k in kernel_batch:
             env = self.envs[(m, n, k)]
-            for _ in range(self.group_size):
-                traj = self.generate_rollout(
-                    env, temperature=temperature, min_steps=min_steps,
+            # Anchor: greedy rollout from ref_policy
+            anchor = self.generate_anchor_rollout(env)
+            rollouts[(m, n, k)].append(anchor)
+
+            # Get valid first actions for this kernel (exclude stop)
+            state = env.reset()
+            _, mask, _ = state
+            valid_actions = [
+                i for i in range(N_ACTIONS)
+                if mask[i] > 0 and ACTION_NAMES[i] != "stop"
+            ]
+
+            # Assign different forced first actions to each exploration rollout
+            n_explore = self.group_size - 1
+            if len(valid_actions) >= n_explore:
+                forced_actions = random.sample(valid_actions, n_explore)
+            else:
+                forced_actions = valid_actions * (n_explore // len(valid_actions) + 1)
+                forced_actions = forced_actions[:n_explore]
+                random.shuffle(forced_actions)
+
+            for forced_a in forced_actions:
+                traj = self.generate_forced_rollout(
+                    env, forced_a, temperature=temperature,
                 )
                 rollouts[(m, n, k)].append(traj)
         return rollouts
@@ -326,100 +478,88 @@ class GRPOTrainer:
                         "old_log_prob": step["log_prob"],
                     })
 
-        # Global z-normalization
+        # Global z-normalization + clamping
         if len(all_entries) > 1:
             advs = np.array([e["advantage"] for e in all_entries])
             mean_a = advs.mean()
             std_a = advs.std() + 1e-8
             for e in all_entries:
-                e["advantage"] = (e["advantage"] - mean_a) / std_a
+                normed = (e["advantage"] - mean_a) / std_a
+                e["advantage"] = max(-3.0, min(3.0, normed))  # clamp [-3, 3]
 
         return all_entries
 
     # ---- Policy gradient update ----
 
     def grpo_update(self, advantages):
-        """One GRPO gradient step. Returns loss dict."""
+        """One full-batch GRPO gradient step. Returns loss dict.
+
+        Processes ALL advantage entries in a single gradient step.
+        Mini-batching causes importance ratio drift within an epoch
+        (35 sequential updates → later batches see stale old_log_probs).
+        With a 20K-param network, full-batch is fast and avoids this.
+        """
         self.policy.train()
-        random.shuffle(advantages)
 
-        total_loss = 0.0
-        total_policy_loss = 0.0
-        total_kl_loss = 0.0
-        total_entropy = 0.0
-        n_batches = 0
+        features = torch.stack([e["features"] for e in advantages]).to(self.device)
+        masks = torch.stack([e["mask"] for e in advantages]).to(self.device)
+        histories = torch.stack([e["history"] for e in advantages]).to(self.device)
+        actions = torch.tensor(
+            [e["action"] for e in advantages], dtype=torch.long
+        ).to(self.device)
+        advs = torch.tensor(
+            [e["advantage"] for e in advantages], dtype=torch.float32
+        ).to(self.device)
+        old_lps = torch.tensor(
+            [e["old_log_prob"] for e in advantages], dtype=torch.float32
+        ).to(self.device)
 
-        for start in range(0, len(advantages), self.batch_size):
-            batch = advantages[start : start + self.batch_size]
+        # Current log probs
+        new_lps = self.policy.log_probs(features, masks, histories, actions)
 
-            features = torch.stack([e["features"] for e in batch]).to(self.device)
-            masks = torch.stack([e["mask"] for e in batch]).to(self.device)
-            histories = torch.stack([e["history"] for e in batch]).to(self.device)
-            actions = torch.tensor(
-                [e["action"] for e in batch], dtype=torch.long
-            ).to(self.device)
-            advs = torch.tensor(
-                [e["advantage"] for e in batch], dtype=torch.float32
-            ).to(self.device)
-            old_lps = torch.tensor(
-                [e["old_log_prob"] for e in batch], dtype=torch.float32
-            ).to(self.device)
+        # Importance ratio
+        ratio = torch.exp(new_lps - old_lps)
 
-            # Current log probs
-            new_lps = self.policy.log_probs(features, masks, histories, actions)
+        # Standard PPO clipped surrogate (symmetric)
+        surr1 = ratio * advs
+        surr2 = torch.clamp(ratio, 1 - self.epsilon, 1 + self.epsilon) * advs
+        policy_loss = -torch.min(surr1, surr2).mean()
 
-            # Importance ratio
-            ratio = torch.exp(new_lps - old_lps)
+        # Entropy bonus
+        logits_ent = self.policy(features, masks, histories)
+        logits_ent = logits_ent.clamp(min=-1e4, max=50)
+        probs_ent = F.softmax(logits_ent, dim=-1)
+        log_probs_ent = F.log_softmax(logits_ent, dim=-1)
+        entropy = -(probs_ent * log_probs_ent).sum(dim=-1).mean()
+        # Adaptive entropy: mild boost when entropy drops below floor
+        ent_floor = 0.5
+        if entropy.item() < ent_floor:
+            adaptive_coef = self.entropy_coef * 2.0
+        else:
+            adaptive_coef = self.entropy_coef
+        entropy_loss = -adaptive_coef * entropy
 
-            # Asymmetric clipped surrogate (DAPO-style)
-            # Wider clip for positive advantages: let good actions update more
-            surr1 = ratio * advs
-            clip_high = 1 + self.epsilon * 1.5  # 0.3 for positive
-            clip_low = 1 - self.epsilon          # 0.2 for negative
-            surr2 = torch.clamp(ratio, clip_low, clip_high) * advs
-            policy_loss = -torch.min(surr1, surr2).mean()
+        # KL penalty against reference (DeepSeek-R1 unbiased estimator)
+        with torch.no_grad():
+            ref_lps = self.ref_policy.log_probs(
+                features, masks, histories, actions
+            )
+        log_ratio = ref_lps - new_lps
+        per_sample_kl = torch.exp(log_ratio) - log_ratio - 1
+        kl_loss = self.beta * per_sample_kl.mean()
 
-            # Entropy bonus to prevent mode collapse (6.2)
-            # Replace -inf with -1e4 (not -inf) so that:
-            #   softmax gives ~0 prob to masked actions (exp(-1e4) ≈ 0)
-            #   but gradients are finite (no 0 * -inf = NaN in backward)
-            logits_ent = self.policy(features, masks, histories)
-            logits_ent = logits_ent.clamp(min=-1e4, max=50)
-            probs_ent = F.softmax(logits_ent, dim=-1)
-            log_probs_ent = F.log_softmax(logits_ent, dim=-1)
-            entropy = -(probs_ent * log_probs_ent).sum(dim=-1).mean()
-            entropy_loss = -self.entropy_coef * entropy
+        loss = policy_loss + kl_loss + entropy_loss
 
-            # KL penalty against reference (DeepSeek-R1 unbiased estimator)
-            # D_KL = e^(log_ref - log_new) - (log_ref - log_new) - 1
-            # Always non-negative, zero when policies match
-            with torch.no_grad():
-                ref_lps = self.ref_policy.log_probs(
-                    features, masks, histories, actions
-                )
-            log_ratio = ref_lps - new_lps
-            per_sample_kl = torch.exp(log_ratio) - log_ratio - 1
-            kl_loss = self.beta * per_sample_kl.mean()
+        self.optimizer.zero_grad()
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(self.policy.parameters(), 1.0)
+        self.optimizer.step()
 
-            loss = policy_loss + kl_loss + entropy_loss
-
-            self.optimizer.zero_grad()
-            loss.backward()
-            torch.nn.utils.clip_grad_norm_(self.policy.parameters(), 1.0)
-            self.optimizer.step()
-
-            total_loss += loss.item()
-            total_policy_loss += policy_loss.item()
-            total_kl_loss += kl_loss.item()
-            total_entropy += entropy.item()
-            n_batches += 1
-
-        denom = max(n_batches, 1)
         return {
-            "loss": total_loss / denom,
-            "policy_loss": total_policy_loss / denom,
-            "kl_loss": total_kl_loss / denom,
-            "entropy": total_entropy / denom,
+            "loss": loss.item(),
+            "policy_loss": policy_loss.item(),
+            "kl_loss": kl_loss.item(),
+            "entropy": entropy.item(),
             "n_steps": len(advantages),
         }
 
@@ -613,11 +753,13 @@ class GRPOTrainer:
         for epoch in range(n_grpo_epochs):
             global_epoch = n_bc_epochs + epoch
 
-            # Temperature schedule: exploration then exploitation
-            exploring = epoch < 150
-            temperature = 1.5 if exploring else 0.5
-            # Force at least 2 transforms during exploration to prevent stop-collapse
-            min_steps = 2 if exploring else 0
+            # DA-GRPO: moderate temperature, no exploration/exploitation split.
+            # Anchor provides baseline signal; exploration finds improvements.
+            # Gentle decay: 1.0 → 0.7 over training
+            temperature = max(0.7, 1.0 - 0.3 * epoch / max(n_grpo_epochs, 1))
+            # Force 1 transform in exploration rollouts to prevent trivial stopping
+            # (stop gives R=0 which is neutral, but we want exploration data)
+            min_steps = 1
 
             # Sample kernel batch
             if len(self.kernels) <= self.batch_size:
@@ -625,7 +767,7 @@ class GRPOTrainer:
             else:
                 kernel_batch = random.sample(self.kernels, self.batch_size)
 
-            # Collect rollouts
+            # Collect rollouts (1 anchor + G-1 exploration per kernel)
             rollouts = self.collect_rollouts(
                 kernel_batch, temperature=temperature, min_steps=min_steps,
             )
@@ -636,33 +778,53 @@ class GRPOTrainer:
                 logger.warning("Epoch %d: empty advantages, skipping", global_epoch)
                 continue
 
-            # Multiple gradient updates per rollout batch (PPO-style)
-            # Rollout collection is expensive (~40s), gradient step is cheap (~0.01s)
-            for _ in range(self.n_updates):
-                update = self.grpo_update(advantages)
+            # Single gradient update per rollout batch
+            # Multiple updates on same rollouts cause stale importance ratios → loss spikes
+            update = self.grpo_update(advantages)
             self.stats["grpo_loss"].append(update["loss"])
             self.stats["grpo_policy_loss"].append(update["policy_loss"])
             self.stats["grpo_kl_loss"].append(update["kl_loss"])
 
-            # Log every 10 epochs
-            if (epoch + 1) % 10 == 0:
-                all_rewards = []
-                all_lengths = []
+            if True:  # Log every epoch (rollout collection is the bottleneck, not logging)
+                # Separate anchor vs exploration stats
+                anchor_rewards = []
+                explore_rewards = []
+                explore_lengths = []
+                stop_count = 0
+                n_explore = 0
                 for trajs in rollouts.values():
-                    for traj in trajs:
-                        all_rewards.append(sum(s["reward"] for s in traj))
-                        all_lengths.append(len(traj))
-                mean_r = np.mean(all_rewards) if all_rewards else 0
-                mean_len = np.mean(all_lengths) if all_lengths else 0
+                    # First trajectory is anchor
+                    anchor_r = sum(s["reward"] for s in trajs[0])
+                    anchor_rewards.append(anchor_r)
+                    # Rest are exploration
+                    for traj in trajs[1:]:
+                        r = sum(s["reward"] for s in traj)
+                        explore_rewards.append(r)
+                        explore_lengths.append(len(traj))
+                        n_explore += 1
+                        if len(traj) == 1 and ACTION_NAMES[traj[0]["action"]] == "stop":
+                            stop_count += 1
+
+                mean_anchor = np.mean(anchor_rewards) if anchor_rewards else 0
+                mean_explore = np.mean(explore_rewards) if explore_rewards else 0
+                mean_len = np.mean(explore_lengths) if explore_lengths else 0
+                stop_rate = stop_count / max(n_explore, 1)
+
+                # Measurement health
+                from .fast_measure import get_error_rate
+                m_errors, m_total, m_cache = get_error_rate()
+                m_rate = m_errors / max(m_total, 1)
 
                 logger.info(
                     "GRPO %d (global %d): loss=%.4f (pol=%.4f kl=%.4f ent=%.3f) "
-                    "reward=%.4f T=%.1f steps=%d len=%.1f min_s=%d",
+                    "anchor_R=%.4f explore_R=%.4f T=%.2f len=%.1f stop=%.0f%% "
+                    "meas=%d/%d(%.0f%%err) cache=%d",
                     epoch + 1, global_epoch + 1,
                     update["loss"], update["policy_loss"], update["kl_loss"],
                     update["entropy"],
-                    mean_r, temperature, update["n_steps"],
-                    mean_len, min_steps,
+                    mean_anchor, mean_explore, temperature,
+                    mean_len, stop_rate * 100,
+                    m_errors, m_total, m_rate * 100, m_cache,
                 )
 
             # Periodic evaluation

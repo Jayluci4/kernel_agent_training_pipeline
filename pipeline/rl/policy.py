@@ -1,6 +1,6 @@
 """MLP policy for PTX transform selection.
 
-Input: 25 kernel features + 21-dim action mask + 21-dim action history = 67 dims
+Input: 28 kernel features + 21-dim action mask + 21-dim action history = 70 dims
 Output: 21 logits over actions (masked before softmax)
 
 The action history encodes which transforms have been applied so far,
@@ -13,7 +13,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.distributions import Categorical
 
-N_FEATURES = 25
+N_FEATURES = 30
 N_ACTIONS = 21
 
 ACTION_NAMES = [
@@ -76,7 +76,7 @@ class TransformPolicy(nn.Module):
 
     def __init__(self, hidden=128, dropout=0.1):
         super().__init__()
-        input_dim = N_FEATURES + N_ACTIONS + N_ACTIONS  # 67
+        input_dim = N_FEATURES + N_ACTIONS + N_ACTIONS  # 70
         self.net = nn.Sequential(
             nn.Linear(input_dim, hidden),
             nn.ReLU(),
@@ -93,7 +93,7 @@ class TransformPolicy(nn.Module):
     def forward(self, features, action_mask, action_history):
         """Compute masked logits.
 
-        features: [B, 25]
+        features: [B, 28]
         action_mask: [B, 21] binary (1=available)
         action_history: [B, 21] binary (1=previously applied)
         Returns: logits [B, 21] with -inf for unavailable actions
@@ -113,9 +113,11 @@ class TransformPolicy(nn.Module):
         probs = F.softmax(logits / temperature, dim=-1)
         # Fallback: if softmax produced NaN (all -inf or numerical issue),
         # use uniform over valid actions
-        if probs.isnan().any():
-            valid = action_mask > 0
-            probs = valid.float() / valid.float().sum(dim=-1, keepdim=True).clamp(min=1)
+        bad = probs.isnan().any(dim=-1) | (probs.sum(dim=-1) < 1e-6)
+        if bad.any():
+            valid = (action_mask > 0).float()
+            uniform = valid / valid.sum(dim=-1, keepdim=True).clamp(min=1e-8)
+            probs = torch.where(bad.unsqueeze(-1), uniform, probs)
         return Categorical(probs)
 
     @torch.no_grad()
@@ -141,17 +143,12 @@ class TransformPolicy(nn.Module):
     def log_probs(self, features, action_mask, action_history, actions):
         """Compute log probabilities of given actions.
 
-        features: [B, 25]
+        features: [B, 30]
         action_mask: [B, 21]
         action_history: [B, 21]
         actions: [B] long tensor
         Returns: [B] log probabilities
         """
         logits = self.forward(features, action_mask, action_history)
-        # Clamp finite logits to prevent overflow
-        finite_mask = logits.isfinite()
-        logits = torch.where(finite_mask, logits.clamp(-50, 50), logits)
         log_probs = F.log_softmax(logits, dim=-1)
-        result = log_probs.gather(-1, actions.unsqueeze(-1)).squeeze(-1)
-        # Clamp result to avoid -inf for numerical stability
-        return result.clamp(min=-50)
+        return log_probs.gather(-1, actions.unsqueeze(-1)).squeeze(-1)

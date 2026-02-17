@@ -5,8 +5,12 @@ and hardware cycle measurement into a step-by-step MDP.
 
 State: 25 scalar features from ParsedKernel
 Action: one of 21 discrete actions (20 transforms + stop)
-Reward: log(cycles_before / cycles_after) - step_cost
+Reward: outcome-only (per-step reward = 0, terminal reward computed externally)
 Done: when "stop" is selected or max_steps reached
+
+DA-GRPO: per-step rewards are zero. The terminal reward
+(log(baseline/final)) is computed by the trainer after the episode
+ends, avoiding the anti-exploration gradient from step costs.
 """
 
 import sys
@@ -16,26 +20,25 @@ import math
 import numpy as np
 import torch
 
-# Compute repo root dynamically (2 levels up from this file)
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-sys.path.insert(0, REPO_ROOT)
+SAWO_ROOT = "/home/jayantlohia16/experiment/gemma-intelligent/SAWO"
+sys.path.insert(0, SAWO_ROOT)
 
-from pipeline.harness.ptx_templates import gemm_tile
-from pipeline.transform.parsed_kernel import (
+from experiments.chronos.harness.ptx_templates import gemm_tile
+from experiments.chronos.transform.parsed_kernel import (
     parse_kernel, emit, deep_copy_kernel, BodyLine,
 )
-from pipeline.transform.base import TransformResult
-from pipeline.transform.register_budget import RegisterBudgetTransform
-from pipeline.transform.cache_hints import (
+from experiments.chronos.transform.base import TransformResult
+from experiments.chronos.transform.register_budget import RegisterBudgetTransform
+from experiments.chronos.transform.cache_hints import (
     CacheHintTransform, _find_unhinted_loads, _LD_GLOBAL_PATTERN,
 )
-from pipeline.transform.vectorize_loads import VectorizeLoadsTransform
-from pipeline.transform.vectorize_stores import VectorizeStoresTransform
-from pipeline.transform.prefetch import PrefetchTransform
-from pipeline.transform.store_cache_hints import StoreCacheHintTransform
-from pipeline.transform.split_vectors import SplitVectorLoadsTransform
-from pipeline.transform.reorder import ReorderTransform
-from pipeline.features.kernel_features import (
+from experiments.chronos.transform.vectorize_loads import VectorizeLoadsTransform
+from experiments.chronos.transform.vectorize_stores import VectorizeStoresTransform
+from experiments.chronos.transform.prefetch import PrefetchTransform
+from experiments.chronos.transform.store_cache_hints import StoreCacheHintTransform
+from experiments.chronos.transform.split_vectors import SplitVectorLoadsTransform
+from experiments.chronos.transform.reorder import ReorderTransform
+from experiments.chronos.features.kernel_features import (
     extract_features, features_to_array,
 )
 
@@ -69,8 +72,7 @@ LABEL_TO_TRANSFORM = {
     "split_ld": ("split_vector_loads", {}),
 }
 
-STEP_COST = 0.005  # Per-step penalty to encourage efficiency
-REWARD_FLOOR = 0.01  # Ignore <1% cycle changes (noise vs real signal)
+REWARD_FLOOR = 0.01  # Ignore <1% total improvement (noise vs real signal)
 
 
 # ---------------------------------------------------------------------------
@@ -188,7 +190,7 @@ class TransformEnv:
         """Take an action. Returns (next_state, reward, done, info).
 
         next_state: (features, action_mask, action_history) tensors
-        reward: float (log cycle ratio - step cost)
+        reward: always 0.0 (outcome-only: terminal reward computed by trainer)
         done: bool
         info: dict with cycles, action label, etc.
         """
@@ -207,9 +209,8 @@ class TransformEnv:
                 torch.tensor(mask, dtype=torch.float32),
                 torch.tensor(history, dtype=torch.float32),
             )
-            reward = -STEP_COST
             info["stopped"] = True
-            return state, reward, True, info
+            return state, 0.0, True, info
 
         # Apply transform
         try:
@@ -226,50 +227,36 @@ class TransformEnv:
                 torch.tensor(mask, dtype=torch.float32),
                 torch.tensor(history, dtype=torch.float32),
             )
-            return state, -STEP_COST * 2, True, info
+            return state, 0.0, True, info
 
         if not changed:
             info["no_change"] = True
-            reward = -STEP_COST
         elif self.use_hardware:
-            # Measure new cycle count (in-process, fast)
             new_cycles = self._measure(new_ptx)
             if new_cycles is None:
                 info["measure_error"] = True
-                reward = -STEP_COST * 2
+                # Keep current_ptx unchanged — broken PTX would cascade
+                # failures to all subsequent transforms in this rollout
             else:
-                # Log-transformed reward with noise floor
-                raw_log_ratio = math.log(self.current_cycles / new_cycles)
-                if abs(raw_log_ratio) < REWARD_FLOOR:
-                    # <1% change — treat as noise, not real signal
-                    reward = -STEP_COST
-                    info["below_floor"] = True
-                else:
-                    reward = raw_log_ratio - STEP_COST
                 info["cycles_before"] = self.current_cycles
                 info["cycles_after"] = new_cycles
                 self.current_cycles = new_cycles
-            self.current_ptx = new_ptx
+                self.current_ptx = new_ptx
         else:
-            # No hardware: reward is unknown, set to 0
-            reward = 0.0
             self.current_ptx = new_ptx
 
         self.applied.add(action_label)
         self.step_count += 1
 
-        # Check if max steps reached
         done = self.step_count >= self.max_steps
 
-        # Extract new state
         parsed = parse_kernel(self.current_ptx)
         features = extract_features(parsed)
         feat_array = features_to_array(features)
         mask = get_action_mask(self.applied)
         history = get_action_history(self.applied)
 
-        # If no actions available (all masked except stop), auto-done
-        if sum(mask) <= 1:  # only stop available
+        if sum(mask) <= 1:
             done = True
 
         state = (
@@ -278,4 +265,19 @@ class TransformEnv:
             torch.tensor(history, dtype=torch.float32),
         )
 
-        return state, reward, done, info
+        return state, 0.0, done, info
+
+    def terminal_reward(self):
+        """Compute outcome-only terminal reward.
+
+        Returns log(baseline/final) with noise floor.
+        Positive = improvement, negative = degradation, 0 = no change.
+        """
+        if not self.use_hardware or not self.baseline_cycles or not self.current_cycles:
+            return 0.0
+        if self.baseline_cycles == self.current_cycles:
+            return 0.0
+        r = math.log(self.baseline_cycles / self.current_cycles)
+        if abs(r) < REWARD_FLOOR:
+            return 0.0
+        return r

@@ -14,12 +14,13 @@ import subprocess
 import logging
 import atexit
 
+import hashlib
+
 import numpy as np
 
 logger = logging.getLogger(__name__)
 
-# Compute repo root dynamically (2 levels up from this file)
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+SAWO_ROOT = "/home/jayantlohia16/experiment/gemma-intelligent/SAWO"
 
 # ---------------------------------------------------------------------------
 # Worker subprocess script (runs in its own process with CuPy)
@@ -32,8 +33,8 @@ import numpy as np
 
 # One-time import
 import cupy as cp
-from pipeline.harness.ptx_compiler import compile_ptx, load_kernel
-from pipeline.harness.ptx_templates import gemm_tile
+from experiments.chronos.harness.ptx_compiler import compile_ptx, load_kernel
+from experiments.chronos.harness.ptx_templates import gemm_tile
 
 # Signal ready
 print(json.dumps({{"status": "ready"}}), flush=True)
@@ -122,6 +123,21 @@ def inject_cycle_counter(ptx_source):
     return '\n'.join(lines)
 
 
+def _clear_cuda_errors():
+    """Clear sticky CUDA error state so subsequent operations work."""
+    try:
+        cp.cuda.runtime.getLastError()
+    except Exception:
+        pass
+    # Force a small allocation+sync to verify the context is healthy
+    try:
+        _probe = cp.zeros(1, dtype=cp.uint8)
+        del _probe
+        cp.cuda.Device().synchronize()
+    except Exception:
+        pass
+
+
 def measure(ptx_str, m, n, k, n_warmup=50, n_runs=200):
     spec = gemm_tile(m=m, n=n, k=k)
     try:
@@ -141,8 +157,12 @@ def measure(ptx_str, m, n, k, n_warmup=50, n_runs=200):
             return {{"error": "compile_untimed: " + uresult.error}}
         ukernel = load_kernel(uresult.cubin_path, spec.kernel_name)
         uargs = spec.args_factory()
-        ukernel(spec.grid, spec.block, uargs)
-        cp.cuda.Device().synchronize()
+        try:
+            ukernel(spec.grid, spec.block, uargs)
+            cp.cuda.Device().synchronize()
+        except Exception as e:
+            _clear_cuda_errors()
+            return {{"error": "launch: " + str(e)}}
         try:
             correct = spec.validator(uargs)
         except Exception:
@@ -155,9 +175,13 @@ def measure(ptx_str, m, n, k, n_warmup=50, n_runs=200):
         cycles_buf = cp.zeros(1, dtype=cp.uint32)
         args = (*base_args, cycles_buf)
 
-        for _ in range(n_warmup):
-            kernel(spec.grid, spec.block, args)
-        cp.cuda.Device().synchronize()
+        try:
+            for _ in range(n_warmup):
+                kernel(spec.grid, spec.block, args)
+            cp.cuda.Device().synchronize()
+        except Exception as e:
+            _clear_cuda_errors()
+            return {{"error": "warmup: " + str(e)}}
 
         all_cycles = []
         for _ in range(n_runs):
@@ -170,6 +194,7 @@ def measure(ptx_str, m, n, k, n_warmup=50, n_runs=200):
         return {{"median": int(np.median(arr))}}
 
     except Exception as e:
+        _clear_cuda_errors()
         return {{"error": str(e)}}
 
 
@@ -198,6 +223,8 @@ for line in sys.stdin:
 
 _worker_proc = None
 _baseline_cache = {}
+_ptx_cache = {}  # hash(ptx + m,n,k) -> median cycles (or None for errors)
+_cache_hits = 0
 
 
 def _start_worker():
@@ -207,7 +234,7 @@ def _start_worker():
     if _worker_proc is not None and _worker_proc.poll() is None:
         return True  # already running
 
-    script = _WORKER_SCRIPT.format(repo_root=REPO_ROOT)
+    script = _WORKER_SCRIPT.format(repo_root=SAWO_ROOT)
     try:
         _worker_proc = subprocess.Popen(
             [sys.executable, "-c", script],
@@ -261,18 +288,32 @@ def _stop_worker():
 atexit.register(_stop_worker)
 
 
-def _send_request(ptx_str, m, n, k, n_warmup=50, n_runs=200):
-    """Send a measurement request to the worker. Returns median cycles or None."""
-    global _worker_proc
+_MEASURE_TIMEOUT = 60  # seconds — kill worker if no response in 60s
+_measure_errors = 0
+_measure_total = 0
+_seen_errors = set()  # throttle: only log first occurrence per error message
+
+
+def _send_request(ptx_str, m, n, k, n_warmup=50, n_runs=200, _retry=True):
+    """Send a measurement request to the worker. Returns median cycles or None.
+
+    Uses select() with timeout to prevent infinite hangs when the worker
+    gets stuck on a bad GPU operation. Retries once on failure.
+    """
+    global _worker_proc, _measure_errors, _measure_total
+
+    _measure_total += 1
 
     if not _start_worker():
+        _measure_errors += 1
         return None
 
     # Check if worker died
     if _worker_proc.poll() is not None:
-        logger.warning("Worker died, restarting...")
+        logger.warning("Worker died (exit=%d), restarting...", _worker_proc.returncode)
         _worker_proc = None
         if not _start_worker():
+            _measure_errors += 1
             return None
 
     request = json.dumps({
@@ -286,16 +327,55 @@ def _send_request(ptx_str, m, n, k, n_warmup=50, n_runs=200):
         _worker_proc.stdin.write(request + "\n")
         _worker_proc.stdin.flush()
 
+        # Timeout: use select() to avoid infinite hang on readline()
+        import select
+        ready, _, _ = select.select([_worker_proc.stdout], [], [], _MEASURE_TIMEOUT)
+        if not ready:
+            logger.warning(
+                "Worker hung (no response in %ds for (%d,%d,%d)), killing...",
+                _MEASURE_TIMEOUT, m, n, k,
+            )
+            _worker_proc.kill()
+            _worker_proc.wait(timeout=5)
+            _worker_proc = None
+            _measure_errors += 1
+            # Retry once with fresh worker
+            if _retry:
+                return _send_request(ptx_str, m, n, k, n_warmup, n_runs, _retry=False)
+            return None
+
         response_line = _worker_proc.stdout.readline().strip()
         if not response_line:
             logger.warning("Worker returned empty response, restarting...")
             _worker_proc.kill()
             _worker_proc = None
+            _measure_errors += 1
+            if _retry:
+                return _send_request(ptx_str, m, n, k, n_warmup, n_runs, _retry=False)
             return None
 
         result = json.loads(response_line)
         if "error" in result:
-            logger.debug("Measurement error: %s", result["error"])
+            err_key = result["error"]
+            if err_key not in _seen_errors:
+                _seen_errors.add(err_key)
+                logger.warning("Measurement error (%d,%d,%d): %s (suppressing repeats)",
+                               m, n, k, err_key)
+            _measure_errors += 1
+
+            # Device-side CUDA errors destroy the context — worker must restart.
+            # Host-side errors (compile, inject, incorrect results) are recoverable.
+            _DEVICE_ERRORS = ("misaligned", "illegal", "assert", "unknown exception")
+            is_device_error = any(e in err_key.lower() for e in _DEVICE_ERRORS)
+            if is_device_error:
+                logger.info("Device error detected, restarting worker...")
+                try:
+                    _worker_proc.kill()
+                    _worker_proc.wait(timeout=5)
+                except Exception:
+                    pass
+                _worker_proc = None
+
             return None
 
         return result["median"]
@@ -307,26 +387,42 @@ def _send_request(ptx_str, m, n, k, n_warmup=50, n_runs=200):
         except Exception:
             pass
         _worker_proc = None
+        _measure_errors += 1
+        if _retry:
+            return _send_request(ptx_str, m, n, k, n_warmup, n_runs, _retry=False)
         return None
+
+
+def get_error_rate():
+    """Return (errors, total, cache_hits) measurement counts for diagnostics."""
+    return _measure_errors, _measure_total, _cache_hits
 
 
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
 
-def measure_cycles_fast(ptx_str, m, n, k, n_warmup=30, n_runs=100):
+def measure_cycles_fast(ptx_str, m, n, k, n_warmup=10, n_runs=50):
     """Measure kernel cycles via persistent worker. Returns median cycles or None.
 
-    Defaults tuned for training speed (30/100). For final eval, use 50/200.
+    Uses PTX hash cache: identical PTX on same kernel returns cached result.
+    Defaults tuned for training speed (10/50). For final eval, use 50/200.
     """
-    return _send_request(ptx_str, m, n, k, n_warmup, n_runs)
+    global _cache_hits
+    cache_key = hashlib.md5((ptx_str + f"|{m},{n},{k}").encode()).hexdigest()
+    if cache_key in _ptx_cache:
+        _cache_hits += 1
+        return _ptx_cache[cache_key]
+    result = _send_request(ptx_str, m, n, k, n_warmup, n_runs)
+    _ptx_cache[cache_key] = result
+    return result
 
 
 def get_baseline_cycles(m, n, k):
     """Get cached baseline cycles for a kernel. Measures once with full precision."""
     key = (m, n, k)
     if key not in _baseline_cache:
-        from pipeline.harness.ptx_templates import gemm_tile
+        from experiments.chronos.harness.ptx_templates import gemm_tile
         spec = gemm_tile(m=m, n=n, k=k)
         # Full precision for baselines (cached, only measured once)
         cycles = _send_request(spec.ptx_source, m, n, k, n_warmup=50, n_runs=200)
@@ -337,5 +433,8 @@ def get_baseline_cycles(m, n, k):
 
 
 def clear_cache():
-    """Clear baseline cache."""
+    """Clear baseline and PTX caches."""
+    global _cache_hits
     _baseline_cache.clear()
+    _ptx_cache.clear()
+    _cache_hits = 0
